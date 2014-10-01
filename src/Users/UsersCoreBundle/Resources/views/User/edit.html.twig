@@ -4,6 +4,7 @@
     <h1>User edit</h1>
 
     {{ form(edit_form) }}
+
     <h2>Available roles to assign</h2>
     {% for role in roles %}
         {{ role.getName() }}

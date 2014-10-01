@@ -1,5 +1,15 @@
+{% extends "::base.html.twig" %}
+
+{% block title %}Groups{% endblock %}
+
+{% block body %}
+    {% if error %}
+        <div>{{ error.message }}</div>
+    {% endif %}
+
 {% for group in groups %}
 
-{{ group.getName() }}
+<h2>{{ group.getName() }}</h2>
 
 {% endfor %}
+{% endblock %}

@@ -10,8 +10,12 @@ class DefaultControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $crawler = $client->request('GET', '/hello/Fabien');
+        $crawler = $client->request('GET', '/groups');
 
-        $this->assertTrue($crawler->filter('html:contains("Hello Fabien")')->count() > 0);
+       // $this->assertTrue($crawler->filter('html:contains("lk")')->count() > 0);
+
+        $this->assertTrue($client->getResponse()->isSuccessful(), 'Nije uspesan url zahtev');
+
+        $this->assertCount(2,$crawler->filter('h2'), 'Mora biti 3 naslova');
     }
 }
