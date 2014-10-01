@@ -83,6 +83,7 @@ class LoginController extends Controller
 
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);
+            $em->flush();
 
 
 

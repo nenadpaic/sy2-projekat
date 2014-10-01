@@ -162,6 +162,12 @@ class User implements AdvancedUserInterface
     }
 
     /**
+     * @ORM\OneToMany(targetEntity="Groups\ModelBundle\Entity\Groups", mappedBy="user")
+     */
+    protected $groups;
+
+
+    /**
      * Set username
      *
      * @param string $username
@@ -611,5 +617,39 @@ class User implements AdvancedUserInterface
         }else{
             return false;
         }
+    }
+
+
+    /**
+     * Add groups
+     *
+     * @param \Groups\ModelBundle\Entity\Groups $groups
+     * @return User
+     */
+    public function addGroup(\Groups\ModelBundle\Entity\Groups $groups)
+    {
+        $this->groups[] = $groups;
+
+        return $this;
+    }
+
+    /**
+     * Remove groups
+     *
+     * @param \Groups\ModelBundle\Entity\Groups $groups
+     */
+    public function removeGroup(\Groups\ModelBundle\Entity\Groups $groups)
+    {
+        $this->groups->removeElement($groups);
+    }
+
+    /**
+     * Get groups
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getGroups()
+    {
+        return $this->groups;
     }
 }

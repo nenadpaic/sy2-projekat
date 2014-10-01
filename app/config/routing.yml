@@ -1,3 +1,8 @@
+groups_core:
+    resource: "@GroupsCoreBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
 users_users_core:
     resource: "@UsersUsersCoreBundle/Controller/"
     type:     annotation
