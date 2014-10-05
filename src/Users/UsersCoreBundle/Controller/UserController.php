@@ -2,11 +2,13 @@
 
 namespace Users\UsersCoreBundle\Controller;
 
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\Response;
 use Users\ModelBundle\Entity\User;
 use Users\ModelBundle\Form\UserType;
 
@@ -28,11 +30,19 @@ class UserController extends Controller
     public function indexAction()
     {
         $em = $this->getDoctrine()->getManager();
+        $dbl = $em->getRepository('ModelBundle:User');
+        $query = $dbl->findAll();
 
-        $entities = $em->getRepository('ModelBundle:User')->findAll();
+        $paginator = $this->get('knp_paginator');
+        $pagination = $paginator->paginate(
+            $query,
+            $this->get('request')->query->get('page',1), 10
+        );
+
+
 
         return array(
-            'entities' => $entities,
+            'entities' => $pagination,
         );
     }
     /**
@@ -40,7 +50,7 @@ class UserController extends Controller
      *
      * @Route("/", name="admin_user_create")
      * @Method("POST")
-     * @Template("ModelBundle:User:new.html.twig")
+     * @Template("UsersUsersCoreBundle:User:new.html.twig")
      */
     public function createAction(Request $request)
     {
@@ -53,7 +63,7 @@ class UserController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            return $this->redirect($this->generateUrl('admin_user_show', array('id' => $entity->getId())));
+            return $this->redirect($this->generateUrl("admin_user_show", array('id' => $entity->getId())));
         }
 
         return array(
@@ -111,6 +121,7 @@ class UserController extends Controller
         $em = $this->getDoctrine()->getManager();
 
         $entity = $em->getRepository('ModelBundle:User')->find($id);
+        $roles = $em->getRepository('ModelBundle:Role')->findAll();
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find User entity.');
@@ -120,6 +131,7 @@ class UserController extends Controller
 
         return array(
             'entity'      => $entity,
+            'roles'       => $roles,
             'delete_form' => $deleteForm->createView(),
         );
     }
@@ -130,6 +142,8 @@ class UserController extends Controller
      * @Route("/{id}/edit", name="admin_user_edit")
      * @Method("GET")
      * @Template()
+     * @param $id
+     * @return array
      */
     public function editAction($id)
     {
@@ -142,6 +156,7 @@ class UserController extends Controller
         }
 
         $editForm = $this->createEditForm($entity);
+        /** @var User $id */
         $deleteForm = $this->createDeleteForm($id);
         $roles = $em->getRepository('ModelBundle:Role')->findAll();
 
@@ -171,12 +186,16 @@ class UserController extends Controller
 
         return $form;
     }
+
     /**
      * Edits an existing User entity.
      *
      * @Route("/{id}", name="admin_user_update")
      * @Method("PUT")
-     * @Template("ModelBundle:User:edit.html.twig")
+     * @Template("UsersUsersCoreBundle:User:edit.html.twig")
+     * @param Request $request
+     * @param $id
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function updateAction(Request $request, $id)
     {
@@ -189,6 +208,8 @@ class UserController extends Controller
         }
 
         $deleteForm = $this->createDeleteForm($id);
+
+        /** @var User $entity */
         $editForm = $this->createEditForm($entity);
         $editForm->handleRequest($request);
 
@@ -204,11 +225,15 @@ class UserController extends Controller
             'delete_form' => $deleteForm->createView(),
         );
     }
+
     /**
      * Deletes a User entity.
      *
      * @Route("/{id}", name="admin_user_delete")
      * @Method("DELETE")
+     * @param Request $request
+     * @param $id
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function deleteAction(Request $request, $id)
     {
@@ -245,5 +270,85 @@ class UserController extends Controller
             ->add('submit', 'submit', array('label' => 'Delete'))
             ->getForm()
         ;
+    }
+
+    /**
+     * Add role to user
+     * @param Request $request
+     * @throws \Exception
+     * @internal param user_id $int , int role_id
+     * @return JsonResponse
+     * @Route("/add/role", name="admin_add_role")
+     * @Method("POST")
+     */
+    public function addRoleToUserAction(Request $request)
+    {
+        if ($request->isXMLHttpRequest()) {
+            $data = $request->request->all();
+            $roleId = (int) $data['role_id'];
+            $userId = (int) $data['user_id'];
+            $em = $this->getDoctrine()->getManager();
+            $role = $em->getRepository('ModelBundle:Role')->findOneBy(array(
+                'id' => $roleId
+            ));
+            if(!$role){
+                throw $this->createNotFoundException('Such role does not exist');
+            }
+            $user = $em->getRepository('ModelBundle:User')->find($userId);
+            if(!$user){
+                throw $this->createNotFoundException('Such user does not exist');
+            }
+            $user->addRole($role);
+            $em->persist($user);
+            $em->flush();
+            $response = new JsonResponse();
+            $response->setData(array(
+                'message' => 'Successfuly added role to user'
+            ));
+
+            return $response;
+        }
+
+        return new Response('This is not ajax!', 400);
+    }
+
+    /**
+     * Removes role from user
+     * @param Request $request
+     * @throws \Exception
+     * @internal param user_id $int , int role_id
+     * @return JsonResponse
+     * @Route("/remove/role", name="admin_remove_role")
+     * @Method("POST")
+     */
+    public function removeRoleFromUserAction(Request $request)
+    {
+        if ($request->isXMLHttpRequest()) {
+            $data = $request->request->all();
+            $roleId = (int) $data['role_id'];
+            $userId = (int) $data['user_id'];
+            $em = $this->getDoctrine()->getManager();
+            $role = $em->getRepository('ModelBundle:Role')->findOneBy(array(
+                'id' => $roleId
+            ));
+            if(!$role){
+                throw $this->createNotFoundException('Such role does not exist');
+            }
+            $user = $em->getRepository('ModelBundle:User')->find($userId);
+            if(!$user){
+                throw $this->createNotFoundException('Such user does not exist');
+            }
+            $user->removeRole($role);
+            $em->persist($user);
+            $em->flush();
+            $response = new JsonResponse();
+            $response->setData(array(
+                'message' => 'Successfuly removed role from user'
+            ));
+
+            return $response;
+        }
+
+        return new Response('This is not ajax!', 400);
     }
 }

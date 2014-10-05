@@ -3,16 +3,17 @@
 namespace Users\ModelBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
+use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Security\Core\User\AdvancedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * User
  *
  * @ORM\Table(name="users")
- * @ORM\Entity
+ *  @ORM\Entity(repositoryClass="Users\ModelBundle\Repo\UserRepo")
  */
 class User implements AdvancedUserInterface
 {
@@ -28,7 +29,7 @@ class User implements AdvancedUserInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="username", type="string", length=255)
+     * @ORM\Column(name="username", type="string", length=255, unique=true)
      * @Assert\Regex(pattern="/^[a-zA-Z0-9_]+$/i",htmlPattern = "^[a-zA-Z0-9_]+$", match=true, message="Your username can contain only alphanumeric characters and underscores")
      * @Assert\NotBlank()
      * @Assert\Length(min=2, max=20, minMessage="Username can not be less than {{ limit }} long", maxMessage="Username can not be longer than {{ limit }} characters long")
@@ -39,9 +40,9 @@ class User implements AdvancedUserInterface
      * @var string
      *
      * @ORM\Column(name="password", type="string", length=255)
-     * @Assert\Regex(pattern="/^[a-zA-Z0-9_]+$/i",htmlPattern = "^[a-zA-Z0-9_]+$", match=true, message="Your password can contain only alphanumeric characters and underscores")
-     * @Assert\NotBlank()
-     * @Assert\Length(min=2, max=20, minMessage="Password can not be less than {{ limit }} long", maxMessage="Password can not be longer than {{ limit }} characters long")
+     * @Assert\Regex(pattern="/^[a-zA-Z0-9_]+$/i",htmlPattern = "^[a-zA-Z0-9_]+$", match=true,  message="Your password can contain only alphanumeric characters and underscores",groups={"registration"})
+     * @Assert\NotBlank(groups={"registration"})
+     * @Assert\Length(min=2, max=20, minMessage="Password can not be less than {{ limit }} long", maxMessage="Password can not be longer than {{ limit }} characters long",groups={"registration"})
      *
      */
     private $password;
@@ -49,7 +50,7 @@ class User implements AdvancedUserInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="email", type="string", length=255)
+     * @ORM\Column(name="email", type="string", length=255, unique=true)
      * @Assert\Email(message="Given email is not valid, please provide valid one", checkMX= true, checkHost=true)
      */
     private $email;
@@ -128,7 +129,32 @@ class User implements AdvancedUserInterface
      */
     private $active;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="token", type="string", length=255)
+     *
+     *
+     */
+    private $token;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="profile_image", type="string", length=255)
+     *
+     *
+     */
+    private $profileImage;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="timeline_image", type="string", length=255)
+     *
+     *
+     */
+    private $timeLineImage;
 
     /**
      * @ORM\ManyToMany(targetEntity="Role", inversedBy="users")
@@ -137,9 +163,10 @@ class User implements AdvancedUserInterface
     private $roles;
 
     /**
-     * @var \DateTime
+     * @var \DateTime $created
      *
-     * @ORM\Column(name="created_at", type="datetime")
+     * @Gedmo\Timestampable(on="create")
+     * @ORM\Column(type="datetime", name="created_at")
      */
     private $createdAt;
 
@@ -150,7 +177,13 @@ class User implements AdvancedUserInterface
      */
     private $lastLogin;
 
-
+    /**
+     * @var \DateTime $contentChanged
+     *
+     * @ORM\Column(name="content_changed", type="datetime", nullable=true)
+     * @Gedmo\Timestampable(on="change", field={"username"})
+     */
+    private $contentChanged;
     /**
      * Get id
      *
@@ -160,12 +193,6 @@ class User implements AdvancedUserInterface
     {
         return $this->id;
     }
-
-    /**
-     * @ORM\OneToMany(targetEntity="Groups\ModelBundle\Entity\Groups", mappedBy="user")
-     */
-    protected $groups;
-
 
     /**
      * Set username
@@ -443,18 +470,7 @@ class User implements AdvancedUserInterface
         return $this->active;
     }
 
-    /**
-     * Set createdAt
-     *
-     * @param \DateTime $createdAt
-     * @return User
-     */
-    public function setCreatedAt($createdAt)
-    {
-        $this->createdAt = $createdAt;
 
-        return $this;
-    }
 
     /**
      * Get createdAt
@@ -619,4 +635,108 @@ class User implements AdvancedUserInterface
         }
     }
 
+    /**
+     * Set contentChanged
+     *
+     * @param \DateTime $contentChanged
+     * @return User
+     */
+    public function setContentChanged($contentChanged)
+    {
+        $this->contentChanged = $contentChanged;
+
+        return $this;
+    }
+
+    /**
+     * Get contentChanged
+     *
+     * @return \DateTime 
+     */
+    public function getContentChanged()
+    {
+        return $this->contentChanged;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     * @return User
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * Set token
+     *
+     * @param string $token
+     * @return User
+     */
+    public function setToken($token)
+    {
+        $this->token = $token;
+
+        return $this;
+    }
+
+    /**
+     * Get token
+     *
+     * @return string 
+     */
+    public function getToken()
+    {
+        return $this->token;
+    }
+
+    /**
+     * Set profileImage
+     *
+     * @param string $profileImage
+     * @return User
+     */
+    public function setProfileImage($profileImage)
+    {
+        $this->profileImage = $profileImage;
+
+        return $this;
+    }
+
+    /**
+     * Get profileImage
+     *
+     * @return string 
+     */
+    public function getProfileImage()
+    {
+        return $this->profileImage;
+    }
+
+    /**
+     * Set timeLineImage
+     *
+     * @param string $timeLineImage
+     * @return User
+     */
+    public function setTimeLineImage($timeLineImage)
+    {
+        $this->timeLineImage = $timeLineImage;
+
+        return $this;
+    }
+
+    /**
+     * Get timeLineImage
+     *
+     * @return string 
+     */
+    public function getTimeLineImage()
+    {
+        return $this->timeLineImage;
+    }
 }

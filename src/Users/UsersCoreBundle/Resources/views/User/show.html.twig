@@ -1,5 +1,5 @@
-{% extends '::base.html.twig' %}
-
+{% extends '::admin.html.twig' %}
+{% block title %}Show user{% endblock %}
 {% block body -%}
     <h1>User</h1>
 
@@ -13,10 +13,7 @@
                 <th>Username</th>
                 <td>{{ entity.username }}</td>
             </tr>
-            <tr>
-                <th>Password</th>
-                <td>{{ entity.password }}</td>
-            </tr>
+
             <tr>
                 <th>Email</th>
                 <td>{{ entity.email }}</td>
@@ -81,4 +78,18 @@
     </li>
     <li>{{ form(delete_form) }}</li>
 </ul>
+    <h2>Assigned to roles</h2>
+    {% for key,role in entity.getRolesName() %}
+        <button onclick="removeRole({{ key }}, {{ entity.id }}, '{{ path('admin_remove_role') }}')">{{ role }}</button>
+    {% endfor %}
+    <h2>Add role</h2>
+    {% for r in roles %}
+       <button onclick="addRole({{ entity.id }}, {{ r.getId() }}, '{{ path("admin_add_role") }}')">{{ r.name }}</button>
+    {% endfor %}
+
+{% endblock %}
+{% block javascripts %}
+    {% javascripts '@UsersUsersCoreBundle/Resources/public/js/admin-users.js' output='js/compiled/admin.js' %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
 {% endblock %}

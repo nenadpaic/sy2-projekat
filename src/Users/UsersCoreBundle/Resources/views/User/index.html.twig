@@ -1,5 +1,5 @@
-{% extends '::base.html.twig' %}
-
+{% extends '::admin.html.twig' %}
+{% block title %}List user{% endblock %}
 {% block body -%}
     <h1>User list</h1>
 
@@ -60,11 +60,7 @@
         </tbody>
     </table>
 
-        <ul>
-        <li>
-            <a href="{{ path('admin_user_new') }}">
-                Create a new entry
-            </a>
-        </li>
-    </ul>
+    <div class="navigation">
+        {{ knp_pagination_render(entities) }}
+    </div>
     {% endblock %}

@@ -1,0 +1,36 @@
+profile:
+  title: profile
+  main_title: User Profile
+  username: Username
+  email: Email
+  first_name: First name
+  last_name: Last name
+  country: Country
+  state: State
+  city: City
+  address: Address
+  phone: Phone
+profile-pass:
+  title: Change pasword
+  main_title: Change password
+profile-data:
+  title: User profile data
+  main_title: Profile data
+  first_name: First name
+  last_name: Last name
+  country: Country
+  state: State
+  city: City
+  address: Address
+  phone: Phone
+  password: Password
+  rep-password: Repeat password
+  email: Email
+profile-image:
+  title: Change profile image
+  main_title: Profile picture
+  file: Image
+profile-timeline:
+  title: Change timeline image
+  main_title: Timeline picture
+

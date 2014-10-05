@@ -1,1 +1,7 @@
+{% extends '::base.html.twig' %}
+{% block title %}{{ 'register.title' | trans }}{% endblock %}
+
+{% block body %}
+    <h1>{{ 'register.main_title' | trans }}</h1>
 {{ form(form) }}
+{% endblock %}

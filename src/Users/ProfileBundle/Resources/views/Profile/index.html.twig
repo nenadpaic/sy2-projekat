@@ -1,0 +1,20 @@
+{% extends "::base.html.twig" %}
+
+{% block title %} {{ user.getUsername() }}-{{ "profile.title" | trans }}{% endblock %}
+
+{% block body %}
+    <h1>{{ 'profile.main_title' | trans }}</h1>
+    <img src="{{ asset(user.timelineImageDir()) }}" alt=""/>
+    <img src="{{ asset(user.profileImageDir()) }}" alt=""/>
+    <p><strong>{{ 'profile.username' | trans }}</strong>:{{ user.getUsername() }}</p>
+    <p><strong>{{ 'profile.email' | trans }}</strong>: {{ user.getEmail() }}</p>
+    <p><strong>{{ 'profile.first_name' | trans }}</strong>: {{ user.getFirstName() }}</p>
+    <p><strong>{{ 'profile.last_name' | trans }}</strong>: {{ user.getLastName() }}</p>
+    <p><strong>{{ 'profile.country' | trans }}</strong>:{{ user.getCountry() }}</p>
+    <p><strong>{{ 'profile.state' | trans }}</strong>: {{ user.getState() }}</p>
+    <p><strong>{{ 'profile.city' | trans }}</strong>: {{ user.getCity() }}</p>
+    <p><strong>{{ 'profile.address' | trans }}</strong>: {{ user.getAddress() }}</p>
+    <p><strong>{{ 'profile.phone' | trans }}</strong>: {{ user.getPhone }}</p>
+
+
+{% endblock %}

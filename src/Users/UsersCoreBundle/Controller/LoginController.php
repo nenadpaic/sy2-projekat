@@ -11,12 +11,15 @@ use Symfony\Component\Security\Core\SecurityContextInterface;
 use Symfony\Component\Validator\Constraints\DateTime;
 use Users\ModelBundle\Entity\Role;
 use Users\ModelBundle\Entity\User;
-use Users\ModelBundle\Form\UserType;
+use Users\ModelBundle\Form\RegisterType;
+use Users\ModelBundle\Repo\UserRepo;
 
 class LoginController extends Controller
 {
     /**
-     * @Route("/login", name="login")
+     * @param object $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     * @Route("/login", name="login", defaults={"_locale"="en"} ,requirements={ "_locale" = "en|mk"})
      * @Template()
      */
     public function loginAction(Request $request)
@@ -48,14 +51,17 @@ class LoginController extends Controller
 
 
     /**
-     * @Route("/register", name="register")
+     * @Route("/register", name="register", defaults={"_locale"="en"} ,requirements={ "_locale" = "en|mk"})
      * @Method({"GET", "POST"})
      * @Template()
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function registerAction(Request $request){
         $user = new User();
-        $form = $this->createForm(new UserType(), $user, array('action' => $this->generateUrl('register')));
+        $form = $this->createForm(new RegisterType(), $user, array('action' => $this->generateUrl('register')));
         $form->handleRequest($request);
+
         if($form->isValid() && $request->getMethod() == "POST"){
             $factory = $this->get('security.encoder_factory');
             $user = new User();
@@ -73,8 +79,10 @@ class LoginController extends Controller
             $user->setAddress($form->get('address')->getData());
             $user->setPhone($form->get('phone')->getData());
             $user->setIpAddress($_SERVER['REMOTE_ADDR']);
-            $user->setActive(md5(uniqid(rand(), true)));
-            $user->setCreatedAt(new \DateTime());
+            $user->setActive(0);
+            $user->setToken(md5(uniqid(rand(), true)));
+            $user->setTimeLineImage("");
+            $user->setProfileImage("");
             $user->setLastLogin(new \DateTime());
             $role = $this->getDoctrine()->getManager()->getRepository('ModelBundle:Role')->findOneBy(
               array('id' => 1)
@@ -85,10 +93,47 @@ class LoginController extends Controller
             $em->persist($user);
             $em->flush();
 
+            $message = \Swift_Message::newInstance()
+                ->setSubject('Registration confirmation')
+                ->setFrom('nenadpaic@gmail.com')
+                ->setTo($user->getEmail())
+                ->setContentType('text/html')
+                ->setBody(
+                    $this->renderView(
+                        "UsersUsersCoreBundle:Email:registration.html.twig",
+                        array(
+                            'name' => $user->getFirstName(),
+                            'token' => $user->getToken()
+                        )
+                    )
+                );
+            $this->get('mailer')->send($message);
 
 
         }
         return $this->render('UsersUsersCoreBundle:Login:register.html.twig', array('form' => $form->createView()));
+    }
+    /**
+     * @Route("/activate-acount/{token}", name="activate_acc", defaults={"_locale"="en"} ,requirements={ "_locale" = "en|mk"})
+     * @Method({"GET"})
+     * @Template()
+     *
+     */
+    public function activateAction($token){
+        $em = $this->getDoctrine()->getManager();
+
+        $user_search = $this->getDoctrine()->getRepository('ModelBundle:User')->activateByToken($token);
+
+        if($user_search == null){
+          throw  $this->createNotFoundException('That token do not exists or already has been used.');
+        }
+        $user = $em->getRepository('ModelBundle:User')->findOneBy(array(
+            'id' => $user_search->getId()
+        ));
+        $user->setActive(1);
+        $em->persist($user);
+        $em->flush();
+
     }
 
 

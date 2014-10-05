@@ -1,0 +1,22 @@
+profile:
+  title: профил
+  main_title: Профил на корисникот
+  username: Корисничко име
+  email: е-пошта
+  first_name: Име
+  last_name: Презиме
+  country: Земја
+  state: Земја
+  city: Град
+  address: Адреса
+  phone: Телефон
+profile-pass:
+  title: Промени лозинка
+  main_title: Промени лозинка
+profile-data:
+  first_name: Ime
+  last_name: Last name
+  country: Country
+  state: State
+  address: Address
+  phone: Phone

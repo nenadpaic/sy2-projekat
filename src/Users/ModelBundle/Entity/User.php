@@ -3,16 +3,19 @@
 namespace Users\ModelBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
+use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Security\Core\User\AdvancedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\Validator\Constraints as SecurityAssert;
 
 /**
  * User
  *
  * @ORM\Table(name="users")
- * @ORM\Entity
+ *  @ORM\Entity(repositoryClass="Users\ModelBundle\Repo\UserRepo")
  */
 class User implements AdvancedUserInterface
 {
@@ -28,10 +31,10 @@ class User implements AdvancedUserInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="username", type="string", length=255)
-     * @Assert\Regex(pattern="/^[a-zA-Z0-9_]+$/i",htmlPattern = "^[a-zA-Z0-9_]+$", match=true, message="Your username can contain only alphanumeric characters and underscores")
-     * @Assert\NotBlank()
-     * @Assert\Length(min=2, max=20, minMessage="Username can not be less than {{ limit }} long", maxMessage="Username can not be longer than {{ limit }} characters long")
+     * @ORM\Column(name="username", type="string", length=255, unique=true)
+     * @Assert\Regex(pattern="/^[a-zA-Z0-9_]+$/i",htmlPattern = "^[a-zA-Z0-9_]+$", match=true, message="Your username can contain only alphanumeric characters and underscores", groups={"registration"})
+     * @Assert\NotBlank(groups={"registration"})
+     * @Assert\Length(min=2, max=20, minMessage="Username can not be less than {{ limit }} long", maxMessage="Username can not be longer than {{ limit }} characters long", groups={"registration"})
      */
     private $username;
 
@@ -39,27 +42,29 @@ class User implements AdvancedUserInterface
      * @var string
      *
      * @ORM\Column(name="password", type="string", length=255)
-     * @Assert\Regex(pattern="/^[a-zA-Z0-9_]+$/i",htmlPattern = "^[a-zA-Z0-9_]+$", match=true, message="Your password can contain only alphanumeric characters and underscores")
-     * @Assert\NotBlank()
-     * @Assert\Length(min=2, max=20, minMessage="Password can not be less than {{ limit }} long", maxMessage="Password can not be longer than {{ limit }} characters long")
+     * @Assert\Regex(pattern="/^[a-zA-Z0-9_]+$/i",htmlPattern = "^[a-zA-Z0-9_]+$", match=true,  message="Your password can contain only alphanumeric characters and underscores",groups={"registration", "changepass"})
+     * @Assert\NotBlank(groups={"registration", "changepass"})
+     * @Assert\Length(min=2, max=20, minMessage="Password can not be less than {{ limit }} long", maxMessage="Password can not be longer than {{ limit }} characters long",groups={"registration", "changepass"})
      *
      */
     private $password;
 
+
     /**
      * @var string
      *
-     * @ORM\Column(name="email", type="string", length=255)
-     * @Assert\Email(message="Given email is not valid, please provide valid one", checkMX= true, checkHost=true)
+     * @ORM\Column(name="email", type="string", length=255, unique=true)
+     * @Assert\Email(message="Given email is not valid, please provide valid one", checkMX= true, checkHost=true,groups={"registration"})
+     * @Assert\NotBlank(groups={"registration"})
      */
     private $email;
 
     /**
      * @var string
      * @ORM\Column(name="first_name", type="string", length=255)
-     * @Assert\Regex(pattern="/^[a-zA-Z0-9_]+$/i",htmlPattern = "^[a-zA-Z0-9_]+$", match=true, message="Your First name can contain only alphanumeric characters")
-     * @Assert\NotBlank()
-     * @Assert\Length(min=2, max=20, minMessage="First name can not be less than {{ limit }} long", maxMessage="First name can not be longer than {{ limit }} characters long")
+     * @Assert\Regex(pattern="/^[a-zA-Z0-9_]+$/i",htmlPattern = "^[a-zA-Z0-9_]+$", match=true, message="Your First name can contain only alphanumeric characters", groups={"registration", "profile"})
+     * @Assert\NotBlank(groups={"registration", "profile"})
+     * @Assert\Length(min=2, max=20,groups={"registration", "profile"}, minMessage="First name can not be less than {{ limit }} long", maxMessage="First name can not be longer than {{ limit }} characters long")
      *
      */
     private $firstName;
@@ -67,9 +72,9 @@ class User implements AdvancedUserInterface
     /**
      * @var string
      * @ORM\Column(name="last_name", type="string", length=255)
-     * @Assert\Regex(pattern="/^[a-zA-Z0-9_]+$/i",htmlPattern = "^[a-zA-Z0-9_]+$", match=true, message="Your Last name can contain only alphanumeric characters and underscores")
-     * @Assert\NotBlank()
-     * @Assert\Length(min=2, max=20, minMessage="Last name can not be less than {{ limit }} long", maxMessage="Last name can not be longer than {{ limit }} characters long")
+     * @Assert\Regex(pattern="/^[a-zA-Z0-9_]+$/i",htmlPattern = "^[a-zA-Z0-9_]+$", match=true, message="Your Last name can contain only alphanumeric characters and underscores",groups={"registration", "profile"})
+     * @Assert\NotBlank(groups={"registration", "profile"})
+     * @Assert\Length(min=2, max=20,groups={"registration", "profile"}, minMessage="Last name can not be less than {{ limit }} long", maxMessage="Last name can not be longer than {{ limit }} characters long")
      *
      */
     private $lastName;
@@ -106,9 +111,9 @@ class User implements AdvancedUserInterface
      * @var string
      *
      * @ORM\Column(name="phone", type="string", length=255)
-     * @Assert\Regex(pattern="/^[0-9()+-]+$/i",htmlPattern = "^[0-9()+-]+$", match=true, message="Your phone can contain only numeric characters and ()-+")
+     * @Assert\Regex(pattern="/^[0-9()+-]+$/i",htmlPattern = "^[0-9()+-]+$", match=true, message="Your phone can contain only numeric characters and ()-+",groups={"registration", "profile"})
      *
-     * @Assert\Length(min=5, max=20, minMessage="Phone can not be less than {{ limit }} long", maxMessage="Phone can not be longer than {{ limit }} characters long")
+     * @Assert\Length(min=5, max=20, groups={"registration", "profile"}, minMessage="Phone can not be less than {{ limit }} long", maxMessage="Phone can not be longer than {{ limit }} characters long")
      *
      *
      */
@@ -128,7 +133,32 @@ class User implements AdvancedUserInterface
      */
     private $active;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="token", type="string", length=255)
+     *
+     *
+     */
+    private $token;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="profile_image", type="string", length=255)
+     *
+     *
+     */
+    protected  $profileImage;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="timeline_image", type="string", length=255)
+     *
+     *
+     */
+    private $timeLineImage;
 
     /**
      * @ORM\ManyToMany(targetEntity="Role", inversedBy="users")
@@ -137,9 +167,10 @@ class User implements AdvancedUserInterface
     private $roles;
 
     /**
-     * @var \DateTime
+     * @var \DateTime $created
      *
-     * @ORM\Column(name="created_at", type="datetime")
+     * @Gedmo\Timestampable(on="create")
+     * @ORM\Column(type="datetime", name="created_at")
      */
     private $createdAt;
 
@@ -150,7 +181,27 @@ class User implements AdvancedUserInterface
      */
     private $lastLogin;
 
+    /**
+     * @var \DateTime $contentChanged
+     *
+     * @ORM\Column(name="content_changed", type="datetime", nullable=true)
+     * @Gedmo\Timestampable(on="change", field={"username"})
+     */
+    private $contentChanged;
+    /**
+     * @Assert\File(maxSize="1000000")
+     */
+    private $file;
 
+
+
+    public function setFile(UploadedFile $file){
+        $this->file = $file;
+    }
+
+    public function getFile(){
+        return $this->file;
+    }
     /**
      * Get id
      *
@@ -161,11 +212,82 @@ class User implements AdvancedUserInterface
         return $this->id;
     }
 
-    /**
-     * @ORM\OneToMany(targetEntity="Groups\ModelBundle\Entity\Groups", mappedBy="user")
-     */
-    protected $groups;
+    public function upload()
+    {
 
+        // the file property can be empty if the field is not required
+        if (null === $this->getFile()) {
+            return;
+        }
+
+
+        // use the original file name here but you should
+        // sanitize it at least to avoid any security issues
+
+        // move takes the target directory and then the
+        // target filename to move to
+        $this->getFile()->move(
+            $this->getUploadRootDirProfile(),
+            $this->getFile()->getClientOriginalName()
+        );
+
+        // set the path property to the filename where you've saved the file
+        $image = $this->getFile()->getClientOriginalName();
+
+        // clean up the file property as you won't need it anymore
+        $this->file = null;
+        return $image;
+    }
+
+
+
+    public function getAbsolutePathProfile(){
+        return null === $this->profileImage
+            ? ""
+            : $this->getUploadRootDirProfile() . '/'. $this->profileImage;
+    }
+
+    protected function getUploadRootDirProfile(){
+        return __DIR__.'/../../../../web/'.$this->getUploadDirProfile();
+    }
+    protected function getUploadDirProfile(){
+        return 'uploads/users/profile-images/'. $this->getId();
+    }
+
+    public function getAbsolutePathTimeline(){
+        return null === $this->profileImage
+            ? ""
+            : $this->getUploadRootDirTimeline() . '/'. $this->timeLineImage;
+    }
+
+    protected function getUploadRootDirTimeline(){
+        return __DIR__.'/../../../../web/'.$this->getUploadDirTimeline();
+    }
+    protected function getUploadDirTimeline(){
+        return 'uploads/users/profile-images/'. $this->getId();
+    }
+
+
+    public function profileImageDir(){
+        return  '/uploads/users/profile-images/'.$this->getId(). '/' . $this->profileImage;
+    }
+    public function timelineImageDir(){
+        return  '/uploads/users/profile-images/'.$this->getId(). '/' . $this->timeLineImage;
+    }
+    public  function removeProfileImg(){
+        if($this->profileImage != ''){
+            if(is_file($this->getAbsolutePathProfile())){
+                unlink($this->getAbsolutePathProfile());
+            }
+        }
+    }
+    public  function removeTimelineImg(){
+        if($this->profileImage != ''){
+            if(is_file($this->getAbsolutePathTimeline())){
+                unlink($this->getAbsolutePathTimeline());
+            }
+        }
+    }
 
     /**
      * Set username
@@ -443,18 +565,7 @@ class User implements AdvancedUserInterface
         return $this->active;
     }
 
-    /**
-     * Set createdAt
-     *
-     * @param \DateTime $createdAt
-     * @return User
-     */
-    public function setCreatedAt($createdAt)
-    {
-        $this->createdAt = $createdAt;
 
-        return $this;
-    }
 
     /**
      * Get createdAt
@@ -536,7 +647,7 @@ class User implements AdvancedUserInterface
     {
         $roles = array();
         foreach($this->roles as $role){
-            $roles[] = $role->getName();
+            $roles[$role->getId()] = $role->getName();
         }
         return $roles;
     }
@@ -619,37 +730,108 @@ class User implements AdvancedUserInterface
         }
     }
 
-
     /**
-     * Add groups
+     * Set contentChanged
      *
-     * @param \Groups\ModelBundle\Entity\Groups $groups
+     * @param \DateTime $contentChanged
      * @return User
      */
-    public function addGroup(\Groups\ModelBundle\Entity\Groups $groups)
+    public function setContentChanged($contentChanged)
     {
-        $this->groups[] = $groups;
+        $this->contentChanged = $contentChanged;
 
         return $this;
     }
 
     /**
-     * Remove groups
+     * Get contentChanged
      *
-     * @param \Groups\ModelBundle\Entity\Groups $groups
+     * @return \DateTime 
      */
-    public function removeGroup(\Groups\ModelBundle\Entity\Groups $groups)
+    public function getContentChanged()
     {
-        $this->groups->removeElement($groups);
+        return $this->contentChanged;
     }
 
     /**
-     * Get groups
+     * Set createdAt
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @param \DateTime $createdAt
+     * @return User
      */
-    public function getGroups()
+    public function setCreatedAt($createdAt)
     {
-        return $this->groups;
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * Set token
+     *
+     * @param string $token
+     * @return User
+     */
+    public function setToken($token)
+    {
+        $this->token = $token;
+
+        return $this;
+    }
+
+    /**
+     * Get token
+     *
+     * @return string 
+     */
+    public function getToken()
+    {
+        return $this->token;
+    }
+
+    /**
+     * Set profileImage
+     *
+     * @param string $profileImage
+     * @return User
+     */
+    public function setProfileImage($profileImage)
+    {
+        $this->profileImage = $profileImage;
+
+        return $this;
+    }
+
+    /**
+     * Get profileImage
+     *
+     * @return string 
+     */
+    public function getProfileImage()
+    {
+        return $this->profileImage;
+    }
+
+    /**
+     * Set timeLineImage
+     *
+     * @param string $timeLineImage
+     * @return User
+     */
+    public function setTimeLineImage($timeLineImage)
+    {
+        $this->timeLineImage = $timeLineImage;
+
+        return $this;
+    }
+
+    /**
+     * Get timeLineImage
+     *
+     * @return string 
+     */
+    public function getTimeLineImage()
+    {
+        return $this->timeLineImage;
     }
 }

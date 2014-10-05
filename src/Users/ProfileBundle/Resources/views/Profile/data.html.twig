@@ -1,0 +1,9 @@
+{% extends "::base.html.twig" %}
+
+{% block title %}{{ 'profile-data.title' | trans }}{% endblock %}
+
+{% block body %}
+    <h1>{{ 'profile-data.main_title' | trans }}</h1>
+
+    {{ form(form) }}
+{% endblock %}

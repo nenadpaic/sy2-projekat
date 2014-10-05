@@ -1,0 +1,9 @@
+{% extends "::base.html.twig" %}
+
+{% block title %}{{ 'profile-timeline.title' | trans }}{% endblock %}
+
+{% block body %}
+    <h1>{{ 'profile-timeline.main_title' | trans }}</h1>
+    <img src="{{ asset(user.timelineImageDir()) }}" alt=""/>
+    {{ form(form) }}
+{% endblock %}

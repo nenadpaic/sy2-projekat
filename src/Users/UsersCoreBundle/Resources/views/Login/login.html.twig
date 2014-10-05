@@ -1,14 +1,15 @@
 {% extends "::base.html.twig" %}
 
-{% block title %}UsersUsersCoreBundle:Login:login{% endblock %}
+{% block title %}{{ 'login.title' | trans }}{% endblock %}
 
 {% block body %}
+    <h1>{{ 'login.main_title' | trans }}</h1>
     {% if error %}
         <div>{{ error.message }}</div>
     {% endif %}
 
     <form action="{{ path('login_check') }}" method="post">
-        <label for="username">Username:</label>
+        <label for="username">{{ '' }}</label>
         <input type="text" id="username" name="_username" value="{{ last_username }}" />
 
         <label for="password">Password:</label>
