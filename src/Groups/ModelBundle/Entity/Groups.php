@@ -3,6 +3,11 @@
 namespace Groups\ModelBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+
+
 
 /**
  * Groups
@@ -14,7 +19,6 @@ class Groups
 {
     /**
      * @var integer
-     *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
@@ -24,7 +28,8 @@ class Groups
     /**
      * @var string
      *
-     * @ORM\Column(name="name", type="string", length=255)
+     * @ORM\Column(name="name", type="string", length=255, unique=true)
+     * @Assert\Regex(pattern="/^[a-zA-Z0-9_]+$/i",htmlPattern = "^[a-zA-Z0-9_]+$",match=true,message="groups.no_special_chars")
      */
     private $name;
 
@@ -38,31 +43,62 @@ class Groups
     /**
      * @var string
      *
-     * @ORM\Column(name="group_logo", type="string", length=255)
+     * @ORM\Column(name="group_logo", type="string", length=255, nullable=true)
      */
     private $groupLogo;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="group_cover", type="string", length=255)
+     * @ORM\Column(name="group_cover", type="string", length=255, nullable=true)
      */
     private $groupCover;
 
     /**
-     * @var \DateTime
+     * @Gedmo\Slug(fields={"name"}, updatable=false, separator="-")
+     * @ORM\Column(name="slug", type="string", length=255)
+     */
+    private $slug;
+
+    /**
+     * @var \DateTime $createdAt
      *
-     * @ORM\Column(name="created_at", type="datetime")
+     * @Gedmo\Timestampable(on="create")
+     * @ORM\Column(type="datetime", name="created_at")
      */
     private $createdAt;
 
     /**
      * @var \DateTime
-     *
+     * @Gedmo\Timestampable(on="update")
      * @ORM\Column(name="updated_at", type="datetime")
      */
     private $updatedAt;
 
+    /**
+     * @var \DateTime $contentChanged
+     *
+     * @ORM\Column(name="content_changed", type="datetime", nullable=true)
+     * @Gedmo\Timestampable(on="change", field={"name","description","group_logo","group_cover"})
+     */
+    private $contentChanged;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Users\ModelBundle\Entity\User", inversedBy="groups",cascade={"persist", "remove"}))
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
+     */
+    protected $user;
+
+    /**
+     * @ORM\OneToMany(targetEntity="Groups\ModelBundle\Entity\GroupTopic", mappedBy="group")
+     */
+    protected $group_topic;
+
+
+    /**
+     * @ORM\OneToMany(targetEntity="Groups\ModelBundle\Entity\GroupUsers", mappedBy="group")
+     */
+    protected $group_users;
 
     /**
      * Get id
@@ -73,12 +109,6 @@ class Groups
     {
         return $this->id;
     }
-
-    /**
-     * @ORM\ManyToOne(targetEntity="Users\ModelBundle\Entity\User", inversedBy="groups")
-     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
-     */
-    protected $user;
 
     /**
      * Set name
@@ -188,7 +218,7 @@ class Groups
     /**
      * Get createdAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getCreatedAt()
     {
@@ -211,7 +241,7 @@ class Groups
     /**
      * Get updatedAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getUpdatedAt()
     {
@@ -239,5 +269,193 @@ class Groups
     public function getUser()
     {
         return $this->user;
+    }
+
+    /**
+     * Set contentChanged
+     *
+     * @param \DateTime $contentChanged
+     * @return Groups
+     */
+    public function setContentChanged($contentChanged)
+    {
+        $this->contentChanged = $contentChanged;
+
+        return $this;
+    }
+
+    /**
+     * Get contentChanged
+     *
+     * @return \DateTime
+     */
+    public function getContentChanged()
+    {
+        return $this->contentChanged;
+    }
+
+    /**
+     * Set slug
+     *
+     * @param string $slug
+     * @return Groups
+     */
+    public function setSlug($slug)
+    {
+        $this->slug = $slug;
+
+        return $this;
+    }
+
+    /**
+     * Get slug
+     *
+     * @return string 
+     */
+    public function getSlug()
+    {
+        return $this->slug;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->group_topic = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->group_topic_comment = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->group_topic_comment_reply = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->group_users = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add group_topic
+     *
+     * @param \Groups\ModelBundle\Entity\GroupTopic $groupTopic
+     * @return Groups
+     */
+    public function addGroupTopic(\Groups\ModelBundle\Entity\GroupTopic $groupTopic)
+    {
+        $this->group_topic[] = $groupTopic;
+
+        return $this;
+    }
+
+    /**
+     * Remove group_topic
+     *
+     * @param \Groups\ModelBundle\Entity\GroupTopic $groupTopic
+     */
+    public function removeGroupTopic(\Groups\ModelBundle\Entity\GroupTopic $groupTopic)
+    {
+        $this->group_topic->removeElement($groupTopic);
+    }
+
+    /**
+     * Get group_topic
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getGroupTopic()
+    {
+        return $this->group_topic;
+    }
+
+    /**
+     * Add group_topic_comment
+     *
+     * @param \Groups\ModelBundle\Entity\GroupTopicComment $groupTopicComment
+     * @return Groups
+     */
+    public function addGroupTopicComment(\Groups\ModelBundle\Entity\GroupTopicComment $groupTopicComment)
+    {
+        $this->group_topic_comment[] = $groupTopicComment;
+
+        return $this;
+    }
+
+    /**
+     * Remove group_topic_comment
+     *
+     * @param \Groups\ModelBundle\Entity\GroupTopicComment $groupTopicComment
+     */
+    public function removeGroupTopicComment(\Groups\ModelBundle\Entity\GroupTopicComment $groupTopicComment)
+    {
+        $this->group_topic_comment->removeElement($groupTopicComment);
+    }
+
+    /**
+     * Get group_topic_comment
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getGroupTopicComment()
+    {
+        return $this->group_topic_comment;
+    }
+
+    /**
+     * Add group_topic_comment_reply
+     *
+     * @param \Groups\ModelBundle\Entity\GroupTopicCommentReply $groupTopicCommentReply
+     * @return Groups
+     */
+    public function addGroupTopicCommentReply(\Groups\ModelBundle\Entity\GroupTopicCommentReply $groupTopicCommentReply)
+    {
+        $this->group_topic_comment_reply[] = $groupTopicCommentReply;
+
+        return $this;
+    }
+
+    /**
+     * Remove group_topic_comment_reply
+     *
+     * @param \Groups\ModelBundle\Entity\GroupTopicCommentReply $groupTopicCommentReply
+     */
+    public function removeGroupTopicCommentReply(\Groups\ModelBundle\Entity\GroupTopicCommentReply $groupTopicCommentReply)
+    {
+        $this->group_topic_comment_reply->removeElement($groupTopicCommentReply);
+    }
+
+    /**
+     * Get group_topic_comment_reply
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getGroupTopicCommentReply()
+    {
+        return $this->group_topic_comment_reply;
+    }
+
+    /**
+     * Add group_users
+     *
+     * @param \Groups\ModelBundle\Entity\GroupUsers $groupUsers
+     * @return Groups
+     */
+    public function addGroupUser(\Groups\ModelBundle\Entity\GroupUsers $groupUsers)
+    {
+        $this->group_users[] = $groupUsers;
+
+        return $this;
+    }
+
+    /**
+     * Remove group_users
+     *
+     * @param \Groups\ModelBundle\Entity\GroupUsers $groupUsers
+     */
+    public function removeGroupUser(\Groups\ModelBundle\Entity\GroupUsers $groupUsers)
+    {
+        $this->group_users->removeElement($groupUsers);
+    }
+
+    /**
+     * Get group_users
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getGroupUsers()
+    {
+        return $this->group_users;
     }
 }

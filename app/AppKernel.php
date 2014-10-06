@@ -22,6 +22,10 @@ class AppKernel extends Kernel
             new Users\UsersCoreBundle\UsersUsersCoreBundle(),
             new Users\ModelBundle\ModelBundle(),
             new Users\ProfileBundle\UsersProfileBundle(),
+            new Groups\CoreBundle\GroupsCoreBundle(),
+            new Groups\ModelBundle\GroupsModelBundle(),
+            new DefaultTables\CoreBundle\DefaultTablesCoreBundle(),
+            new DefaultTables\ModelBundle\DefaultTablesModelBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

@@ -1,15 +1,14 @@
 {% extends "::base.html.twig" %}
 
-{% block title %}Groups{% endblock %}
+{% block title %}{{ 'groups.title' | trans }}{% endblock %}
 
 {% block body %}
-    {% if error %}
-        <div>{{ error.message }}</div>
-    {% endif %}
-
+<h1>{{ 'groups.main_title' | trans }}</h1>
 {% for group in groups %}
 
 <h2>{{ group.getName() }}</h2>
 
 {% endfor %}
+
+    <a href="{{ path('public_profile_data') }}">Profile</a>
 {% endblock %}

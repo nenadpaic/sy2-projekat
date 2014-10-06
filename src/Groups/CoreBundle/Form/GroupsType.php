@@ -15,10 +15,20 @@ class GroupsType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('name')
-            ->add('description')
-            ->add('groupLogo')
-            ->add('groupCover')
+            ->add('name', 'text', array(
+                'label' => 'form.name'
+            ))
+            ->add('description', 'text', array(
+                'label' => 'form.description'
+            ))
+            ->add('groupLogo', 'text', array(
+                'required' => false,
+                'label' => 'form.logo'
+            ))
+            ->add('groupCover','text',array(
+                'required' => false,
+                'label' => 'form.cover'
+            ))
 
         ;
     }

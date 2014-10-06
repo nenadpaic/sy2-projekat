@@ -3,8 +3,16 @@
     <head>
         <meta charset="UTF-8" />
         <title>{% block title %}Welcome!{% endblock %}</title>
-        {% block stylesheets %}{% endblock %}
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+        <!-- Default css -->
+        <style src="{{ asset('style.css') }}" type="text/javascript"></style>
+        <style src="{{ asset('public/css/bootstrap.min.css') }}" type="text/javascript"></style>
+        <!--End of css-->
+
+        <!--Default JS-->
+        <script src="{{ asset('public/js/jquery.js') }}"></script>
+        <script src="{{ asset('public/js/bootstrap.min.js') }}"></script>
+        <!--End of JS-->
     </head>
     <body>
         {% block body %}{% endblock %}

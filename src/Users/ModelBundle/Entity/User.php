@@ -193,7 +193,30 @@ class User implements AdvancedUserInterface
      */
     private $file;
 
+    /**
+     * @ORM\OneToMany(targetEntity="Groups\ModelBundle\Entity\Groups", mappedBy="user",cascade={"persist", "remove"}))
+     */
+    protected $groups;
 
+    /**
+     * @ORM\OneToMany(targetEntity="Groups\ModelBundle\Entity\GroupTopic", mappedBy="user",cascade={"persist", "remove"}))
+     */
+    protected $group_topic;
+
+    /**
+     * @ORM\OneToMany(targetEntity="Groups\ModelBundle\Entity\GroupTopicComment", mappedBy="user",cascade={"persist", "remove"}))
+     */
+    protected $group_topic_comment;
+
+    /**
+     * @ORM\OneToMany(targetEntity="Groups\ModelBundle\Entity\GroupTopicCommentReply", mappedBy="user",cascade={"persist", "remove"}))
+     */
+    protected $group_topic_comment_reply;
+
+    /**
+     * @ORM\OneToMany(targetEntity="Groups\ModelBundle\Entity\GroupUsers", mappedBy="user",cascade={"persist", "remove"}))
+     */
+    protected $group_users;
 
     public function setFile(UploadedFile $file){
         $this->file = $file;
@@ -211,6 +234,7 @@ class User implements AdvancedUserInterface
     {
         return $this->id;
     }
+
 
     public function upload()
     {
@@ -833,5 +857,170 @@ class User implements AdvancedUserInterface
     public function getTimeLineImage()
     {
         return $this->timeLineImage;
+    }
+
+    /**
+     * Add groups
+     *
+     * @param \Groups\ModelBundle\Entity\Groups $groups
+     * @return User
+     */
+    public function addGroup(\Groups\ModelBundle\Entity\Groups $groups)
+    {
+        $this->groups[] = $groups;
+
+        return $this;
+    }
+
+    /**
+     * Remove groups
+     *
+     * @param \Groups\ModelBundle\Entity\Groups $groups
+     */
+    public function removeGroup(\Groups\ModelBundle\Entity\Groups $groups)
+    {
+        $this->groups->removeElement($groups);
+    }
+
+    /**
+     * Get groups
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getGroups()
+    {
+        return $this->groups;
+    }
+
+    /**
+     * Add group_topic
+     *
+     * @param \Groups\ModelBundle\Entity\GroupTopic $groupTopic
+     * @return User
+     */
+    public function addGroupTopic(\Groups\ModelBundle\Entity\GroupTopic $groupTopic)
+    {
+        $this->group_topic[] = $groupTopic;
+
+        return $this;
+    }
+
+    /**
+     * Remove group_topic
+     *
+     * @param \Groups\ModelBundle\Entity\GroupTopic $groupTopic
+     */
+    public function removeGroupTopic(\Groups\ModelBundle\Entity\GroupTopic $groupTopic)
+    {
+        $this->group_topic->removeElement($groupTopic);
+    }
+
+    /**
+     * Get group_topic
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getGroupTopic()
+    {
+        return $this->group_topic;
+    }
+
+    /**
+     * Add group_topic_comment
+     *
+     * @param \Groups\ModelBundle\Entity\GroupTopicComment $groupTopicComment
+     * @return User
+     */
+    public function addGroupTopicComment(\Groups\ModelBundle\Entity\GroupTopicComment $groupTopicComment)
+    {
+        $this->group_topic_comment[] = $groupTopicComment;
+
+        return $this;
+    }
+
+    /**
+     * Remove group_topic_comment
+     *
+     * @param \Groups\ModelBundle\Entity\GroupTopicComment $groupTopicComment
+     */
+    public function removeGroupTopicComment(\Groups\ModelBundle\Entity\GroupTopicComment $groupTopicComment)
+    {
+        $this->group_topic_comment->removeElement($groupTopicComment);
+    }
+
+    /**
+     * Get group_topic_comment
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getGroupTopicComment()
+    {
+        return $this->group_topic_comment;
+    }
+
+    /**
+     * Add group_topic_comment_reply
+     *
+     * @param \Groups\ModelBundle\Entity\GroupTopicCommentReply $groupTopicCommentReply
+     * @return User
+     */
+    public function addGroupTopicCommentReply(\Groups\ModelBundle\Entity\GroupTopicCommentReply $groupTopicCommentReply)
+    {
+        $this->group_topic_comment_reply[] = $groupTopicCommentReply;
+
+        return $this;
+    }
+
+    /**
+     * Remove group_topic_comment_reply
+     *
+     * @param \Groups\ModelBundle\Entity\GroupTopicCommentReply $groupTopicCommentReply
+     */
+    public function removeGroupTopicCommentReply(\Groups\ModelBundle\Entity\GroupTopicCommentReply $groupTopicCommentReply)
+    {
+        $this->group_topic_comment_reply->removeElement($groupTopicCommentReply);
+    }
+
+    /**
+     * Get group_topic_comment_reply
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getGroupTopicCommentReply()
+    {
+        return $this->group_topic_comment_reply;
+    }
+
+    /**
+     * Add group_users
+     *
+     * @param \Groups\ModelBundle\Entity\GroupUsers $groupUsers
+     * @return User
+     */
+    public function addGroupUser(\Groups\ModelBundle\Entity\GroupUsers $groupUsers)
+    {
+        $this->group_users[] = $groupUsers;
+
+        return $this;
+    }
+
+    /**
+     * Remove group_users
+     *
+     * @param \Groups\ModelBundle\Entity\GroupUsers $groupUsers
+     */
+    public function removeGroupUser(\Groups\ModelBundle\Entity\GroupUsers $groupUsers)
+    {
+        $this->group_users->removeElement($groupUsers);
+    }
+
+    /**
+     * Get group_users
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getGroupUsers()
+    {
+        return $this->group_users;
     }
 }

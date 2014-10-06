@@ -1,0 +1,11 @@
+groups:
+  title: Groups
+  main_title: Groups list
+  not_found: Grupa ne postoji
+  no_special_chars: Ime grupe moze da sadrzi samo slova,brojeve i donje crte
+
+form:
+  logo: Group logo
+  cover: Group cover
+  name: Group name
+  description: Description

@@ -1,0 +1,11 @@
+groups:
+  title: Groups
+  main_title: Groups list
+  not_found: That group does not exist
+  no_special_chars: Group name can contain only alphanumeric characters and
+
+form:
+  logo: Group logo
+  cover: Group cover
+  name: Group name
+  description: Description

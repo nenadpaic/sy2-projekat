@@ -1,3 +1,13 @@
+default_tables_model:
+    resource: "@DefaultTablesModelBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+default_tables_core:
+    resource: "@DefaultTablesCoreBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
 users_profile:
     resource: "@UsersProfileBundle/Controller/"
     type:     annotation
@@ -18,3 +28,9 @@ login_check:
 logout:
     path: /logout
 
+groups_core:
+    resource: "@GroupsCoreBundle/Controller/"
+    type:     annotation
+    prefix:   /{_locale}
+    requirements:
+              _locale: en|mk
