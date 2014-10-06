@@ -1,14 +1,15 @@
 {% extends "::base.html.twig" %}
-
 {% block title %}{{ 'groups.title' | trans }}{% endblock %}
-
 {% block body %}
-<h1>{{ 'groups.main_title' | trans }}</h1>
-{% for group in groups %}
+    <h1>{{ 'groups.main_title' | trans }}</h1>
+    {% for group in groups %}
+        <h2>{{ group.getName() }}</h2>
+    {% endfor %}
 
-<h2>{{ group.getName() }}</h2>
-
-{% endfor %}
+    <div class="navigation">
+        {{ knp_pagination_render(groups) }}
+    </div>
 
     <a href="{{ path('public_profile_data') }}">Profile</a>
+
 {% endblock %}

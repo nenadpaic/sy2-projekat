@@ -17,8 +17,15 @@ class DefaultController extends Controller
         $em = $this->getDoctrine()->getManager();
         $groups = $em->getRepository('GroupsModelBundle:Groups')->findAll();
 
+        $paginator = $this->get('knp_paginator');
+        $pagination = $paginator->paginate(
+            $groups,
+            $this->get('request')->query->get('page',1), 10
+        );
+
+
         return array(
-            'groups' => $groups
+            'groups' => $pagination
         );
     }
 
