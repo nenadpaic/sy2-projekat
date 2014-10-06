@@ -1,12 +1,16 @@
-groups_core:
-    resource: "@GroupsCoreBundle/Controller/"
+users_profile:
+    resource: "@UsersProfileBundle/Controller/"
     type:     annotation
-    prefix:   /
+    prefix:   /{_locale}/users
+    requirements:
+      _locale: en|mk
 
 users_users_core:
     resource: "@UsersUsersCoreBundle/Controller/"
     type:     annotation
-    prefix:   /
+    prefix:   /{_locale}/
+    requirements:
+          _locale: en|mk
 
 login_check:
     path: /login_check
