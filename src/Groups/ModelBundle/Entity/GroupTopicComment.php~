@@ -24,20 +24,6 @@ class GroupTopicComment
     private $id;
 
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="topic_id", type="integer")
-     */
-    private $topicId;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="user_id", type="integer")
-     */
-    private $userId;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="message", type="text")

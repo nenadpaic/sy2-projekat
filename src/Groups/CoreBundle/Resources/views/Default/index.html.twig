@@ -2,14 +2,72 @@
 {% block title %}{{ 'groups.title' | trans }}{% endblock %}
 {% block body %}
     <h1>{{ 'groups.main_title' | trans }}</h1>
+
+    {% if app.user %}
+        <!--If user is logged in, button for creating new group -->
+        <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#create-group-modal">
+            Create new group
+        </button>
+    {% endif %}
+    <!--Listing groups-->
     {% for group in groups %}
-        <h2>{{ group.getName() }}</h2>
+        <a href="{{ path('group', {'slug' : group.getSlug()}) }}"><h2>{{ group.getName() | striptags}}</h2></a>
+        <p>{{ group_users.countGroupUsers(group) }}</p>
+        {% if app.user %}
+            <div id="enter-group-{{ group.getId() }}">
+                {% if(group_users.checkUserStatus(group,app.security.getToken().getUser() ) == 0 )%}
+                    <button class="btn btn-default" onclick="user_group_status({{ group.getId() }},0, '{{ path('user-status-group') }}')">
+                        Join Group
+                    </button>
+                {% elseif(group_users.checkUserStatus(group,app.security.getToken().getUser()) == 1) %}
+                    <button class="btn btn-default" disabled>
+                        Request Sent
+                    </button>
+                {% elseif(group_users.checkUserStatus(group,app.security.getToken().getUser()) == 2) %}
+                    <button class="btn btn-warning" onclick="user_group_status({{ group.getId() }},1,'{{ path('user-status-group') }}')">
+                        Leave group
+                    </button>
+                {% elseif(group_users.checkUserStatus(group,app.security.getToken().getUser()) == 3) %}
+                    <button class="btn btn-success" disabled>
+                        Your group
+                    </button>
+                {% endif %}
+            </div>
+        {% endif %}
+        <p>{{ group.getDescription() | striptags }}</p>
     {% endfor %}
+    <!--End of listing groups-->
 
-    <div class="navigation">
-        {{ knp_pagination_render(groups) }}
-    </div>
-
-    <a href="{{ path('public_profile_data') }}">Profile</a>
-
+    {% if app.user %}
+        <!--Starting create group modal for logged in users-->
+        <div class="modal fade" id="create-group-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span lass="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Create new group</h4>
+                    </div>
+                    <div class="modal-body">
+                        {{ form(form) }}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--End of create group modal -->
+    {% endif %}
+{% endblock %}
+{% block javascripts %}
+    {% if not form.vars.valid %}
+        <script>
+            $('#create-group-modal').modal('show');
+        </script>
+    {% endif %}
+    {% if app.user %}
+        {% javascripts '@GroupsCoreBundle/Resources/public/js/groups.js' %}
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+        {% endjavascripts %}
+    {% endif %}
 {% endblock %}

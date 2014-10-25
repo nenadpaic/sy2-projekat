@@ -2,10 +2,16 @@ groups:
   title: Groups
   main_title: Groups list
   not_found: That group does not exist
-  no_special_chars: Group name can contain only alphanumeric characters and
+  no_special_chars: Group name can contain only alphanumeric characters and _-' symbols
+  topic_no_special_chars: Topic title can contain only alphanumeric characters and _-' symbols
+  topic_not_found: No such topic in this group
 
 form:
   logo: Group logo
   cover: Group cover
   name: Group name
   description: Description
+  create_group: Create Group
+  topic_description: Topic Description
+  topic_name: Topic Name
+  create_new_topic: Create New Topic

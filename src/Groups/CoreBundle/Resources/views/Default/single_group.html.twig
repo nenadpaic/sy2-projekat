@@ -1,0 +1,154 @@
+{% extends "::base.html.twig" %}
+{% block title %}Group | {{ group.getName | striptags }}{% endblock %}
+{% block body %}
+
+    <div id="warnings">
+    </div>
+    <h1>{{ group.getName() | striptags}}</h1>
+    <p>{{ group.getDescription() | striptags}}</p>
+    {% if(group_users.isAdminOfGroup(group,app.security.getToken().getUser()) == 1) %}
+        <!--If user is admin of group, button for uploading modals-->
+        <button class="btn btn-primary" data-toggle="modal" data-target="#upload-timeline-modal">
+            Upload timeline photo
+        </button>
+        <button class="btn btn-primary" data-toggle="modal" data-target="#upload-logo-modal">
+            Upload logo photo
+        </button>
+        <!--End of modal buttons-->
+    {% endif %}
+
+    <!--Group logo photo-->
+    <div id="group-logo-photo">
+        {% if(group.getGroupLogo()) %}
+            <img src="/uploads/groups/{{ group.getId() }}/{{ group.getGroupLogo() }}">
+        {% endif %}
+    </div>
+    <!--End of group logo-->
+
+    <!--Group cover photo-->
+    <div id="group-cover-photo">
+        {% if(group.getGroupCover()) %}
+            <img src="/uploads/groups/{{ group.getId() }}/{{ group.getGroupCover() }}">
+        {% endif %}
+    </div>
+    <!--End of cover photo-->
+
+    <!--Number of topics-->
+    <p>{{ group_topic.countGroupTopics(group.getId()) }}</p>
+    <!--End of number of topics-->
+
+    <!--Listing all group topics-->
+    {% if group_topic.listAllTopics(group.getId()) %}
+        {% for group_t in group_topic.listAllTopics(group.getId()) %}
+            <a href="{{ path('group-topic', {'slug' : group.getSlug(),'topic_id' : group_t.getId()}) }}"><h5>{{ group_t
+                    .getTitle() |
+                    striptags}}</h5></a>
+
+        {% endfor %}
+    {% else %}
+        <p>No topics yet</p>
+    {% endif %}
+    <!--End of group topics-->
+    {% include "ReportCoreBundle:Default:_report_button.html.twig" with{"reported": reported} %}
+
+    {% if(group_users.isAdminOfGroup(group,app.security.getToken().getUser()) == 1) %}
+        <!--Requests, only admin can see them-->
+        {% if(group_users.listAllPendingRequestsGroup(group)) %}
+            {% for req in group_users.listAllPendingRequestsGroup(group) %}
+                <div id="group-requests-{{ req.getUser().getId() }}">
+                    <p>{{ req.getUser().getUsername() }}</p>
+                    {% if(req.getUser().getProfileImage()) %}
+                        {{req.getUser().getProfileImage()}}
+                    {% endif %}
+                    <button class="btn btn-success" onclick="accept_to_group(1,{{ req.getUser().getId() }},
+                    {{ group.getId() }}, '{{ path('group-accept-request') }}')">Accept</button>
+                    <button class="btn btn-warning" onclick="accept_to_group(0,{{ req.getUser().getId() }},
+                    {{ group.getId() }}, '{{ path('group-accept-request') }}')">Decline</button>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No requests</p>
+        {% endif %}
+        <!--End of requests-->
+    {% endif %}
+
+    <!--Listing all group members-->
+    {% if group_users %}
+        {% for g_user in group_users.listAllUsersGroup(group) %}
+            <p>{{ g_user.getUser().getUsername() }}</p>
+        {% endfor %}
+    {% else %}
+        <p>No users in this group</p>
+    {% endif %}
+    <!--End of listing group members-->
+
+    {% if(group_users.isMemberOfGroup(group,app.security.getToken().getUser()) == 1) %}
+        <!--New topic form-->
+            {{ form(new_topic_form) }}
+        <!--End of new topic form-->
+    {% endif %}
+
+    {% if(group_users.isAdminOfGroup(group,app.security.getToken().getUser()) == 1) %}
+        <!--Modals for admins of groups -->
+
+        <!--Modal for uploading cover photo for group-->
+        <div class="modal fade" id="upload-timeline-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span lass="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Upload timeline</h4>
+                    </div>
+                    <div class="modal-body" id="upload-timeline-modal-body">
+                        <input type="file" name="upload-timeline" id="upload-timeline"
+                               onchange="check_the_size_of_image(1048576,'upload-timeline')" accept="image/*">
+                        <input class="btn btn-success"type="submit" value="Upload timeline photo" onclick="upload_timeline_photo({{ group.getId() }},'{{ path('group-upload-timeline') }}')">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--End of modal for uploading timeline photo-->
+
+        <!--Modal for uploading logo photo for group-->
+        <div class="modal fade" id="upload-logo-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span lass="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Upload timeline</h4>
+                    </div>
+                    <div class="modal-body" id="upload-logo-modal-body">
+                        <input type="file" name="upload-logo" id="upload-logo"
+                               onchange="check_the_size_of_image(1048576,'upload-logo')" accept="image/*">
+                        <input class="btn btn-success"type="submit" value="Upload logo photo" onclick="upload_logo_photo({{ group.getId() }},'{{ path('group-upload-timeline') }}')">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--End of modal for uploading logo photo-->
+
+        <!--End of modals for admins-->
+    {% endif %}
+{% endblock %}
+
+{% block javascripts %}
+    {% if (group_users.isAdminOfGroup(group,app.security.getToken().getUser()) == 1) %}
+        {% javascripts '@GroupsCoreBundle/Resources/public/js/admin_groups.js' %}
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+        <script src="{{ asset('public/js/cc_functions.js') }}"></script>
+        {% endjavascripts %}
+    {% endif %}
+    {% if app.user %}
+        {% javascripts "ReportCoreBundle/Resource/public/js/report_user.js" %}
+            <script type="text/javascript" src="{{ asset_url }}"></script>
+        {% endjavascripts %}
+    {% endif %}
+{% endblock %}

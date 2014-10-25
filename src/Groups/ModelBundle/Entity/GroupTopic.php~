@@ -24,12 +24,6 @@ class GroupTopic
      */
     private $id;
 
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="group_id", type="integer")
-     */
-    private $groupId;
 
     /**
      * @var string
@@ -37,13 +31,6 @@ class GroupTopic
      * @ORM\Column(name="title", type="string", length=255)
      */
     private $title;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="user_id", type="integer")
-     */
-    private $userId;
 
     /**
      * @var string

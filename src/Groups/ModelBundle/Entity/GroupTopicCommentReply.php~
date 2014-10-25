@@ -22,14 +22,7 @@ class GroupTopicCommentReply
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="comment_id", type="integer")
-     */
-    private $commentId;
-
+    
     /**
      * @var string
      *

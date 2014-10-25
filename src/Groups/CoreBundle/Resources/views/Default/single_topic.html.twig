@@ -1,0 +1,24 @@
+{% extends "::base.html.twig" %}
+{% block title %} {{ topic.getTitle | striptags }} | {{ group.getName | striptags }}{% endblock %}
+{% block body %}
+    <h1>{{ topic.getTitle | striptags }}</h1>
+    <p>{{ topic.getMessage | striptags}}</p>
+
+
+    <div id="topic-replies">
+        {% if group_comments %}
+            {% for comment in group_comments %}
+                {{ comment.getMessage }}
+            {% endfor %}
+        {% else %}
+            <p>No comments for now</p>
+        {% endif %}
+    </div>
+
+{% endblock %}
+{% block javascripts %}
+    {% javascripts '@GroupsCoreBundle/Resources/public/js/groups.js' %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
+

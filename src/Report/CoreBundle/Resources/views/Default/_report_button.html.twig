@@ -1,0 +1,8 @@
+{% if (reported == 0) %}
+{% elseif (reported == 1) %}
+    <button disabled>Your report is on review</button>
+
+{% elseif (reported == 2) %}
+    <button>Report</button>
+{% endif %}
+

@@ -3,6 +3,10 @@
 namespace DefaultTables\ModelBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\Validator\Constraints as Assert;
+
+
 
 /**
  * Categories
@@ -25,14 +29,11 @@ class Categories
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
+     * @Assert\Regex(pattern="/^[a-zA-Z0-9_-' ]+$/i",htmlPattern = "^[a-zA-Z0-9_-' ]+$",match=true, message="Only alphanumeric and _-' characters are allowed")
+     * @Assert\NotBlank()
+     * @Assert\Length(min=2, max=60, minMessage="Category name can not be less than {{ limit }} characters long", maxMessage="Category name can not be longer than {{ limit }} characters long")
      */
     private $name;
-
-    /**
-
-     * @ORM\OneToMany(targetEntity="Groups\ModelBundle\Entity\CategoryGroup", mappedBy="category")
-     */
-    protected $group_categories;
 
     /**
      * Get id
@@ -74,36 +75,4 @@ class Categories
         $this->group_categories = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
-    /**
-     * Add group_categories
-     *
-     * @param \Groups\ModelBundle\Entity\CategoryGroup $groupCategories
-     * @return Categories
-     */
-    public function addGroupCategory(\Groups\ModelBundle\Entity\CategoryGroup $groupCategories)
-    {
-        $this->group_categories[] = $groupCategories;
-
-        return $this;
-    }
-
-    /**
-     * Remove group_categories
-     *
-     * @param \Groups\ModelBundle\Entity\CategoryGroup $groupCategories
-     */
-    public function removeGroupCategory(\Groups\ModelBundle\Entity\CategoryGroup $groupCategories)
-    {
-        $this->group_categories->removeElement($groupCategories);
-    }
-
-    /**
-     * Get group_categories
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getGroupCategories()
-    {
-        return $this->group_categories;
-    }
 }

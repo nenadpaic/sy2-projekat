@@ -6,7 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 
 /**
@@ -29,7 +29,11 @@ class Groups
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, unique=true)
-     * @Assert\Regex(pattern="/^[a-zA-Z0-9_]+$/i",htmlPattern = "^[a-zA-Z0-9_]+$",match=true,message="groups.no_special_chars")
+     * @Assert\Regex(pattern="/^[a-zA-Z0-9_-' ]+$/i",htmlPattern = "^[a-zA-Z0-9_-' ]+$",match=true,
+     * message="groups.no_special_chars")
+     * @Assert\NotBlank()
+     * @Assert\Length(min=2, max=60, minMessage="Group name can not be less than {{ limit }} characters long", maxMessage="Group name can not be longer than {{ limit }} characters long")
+
      */
     private $name;
 
@@ -37,6 +41,8 @@ class Groups
      * @var string
      *
      * @ORM\Column(name="description", type="text")
+     * @Assert\NotBlank()
+     * @Assert\Length(min=2, max=2000, minMessage="Group description can not be less than {{ limit }} characters long", maxMessage="Group description can not be longer than {{ limit }} characters long")
      */
     private $description;
 
@@ -84,19 +90,19 @@ class Groups
     private $contentChanged;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Users\ModelBundle\Entity\User", inversedBy="groups",cascade={"persist", "remove"}))
+     * @ORM\ManyToOne(targetEntity="Users\ModelBundle\Entity\User", inversedBy="groups"))
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      */
     protected $user;
 
     /**
-     * @ORM\OneToMany(targetEntity="Groups\ModelBundle\Entity\GroupTopic", mappedBy="group")
+     * @ORM\OneToMany(targetEntity="Groups\ModelBundle\Entity\GroupTopic", mappedBy="group",cascade={"persist", "remove"})
      */
     protected $group_topic;
 
 
     /**
-     * @ORM\OneToMany(targetEntity="Groups\ModelBundle\Entity\GroupUsers", mappedBy="group")
+     * @ORM\OneToMany(targetEntity="Groups\ModelBundle\Entity\GroupUsers", mappedBy="group",cascade={"persist", "remove"})
      */
     protected $group_users;
 
@@ -262,16 +268,6 @@ class Groups
     }
 
     /**
-     * Get user
-     *
-     * @return \Users\ModelBundle\Entity\User 
-     */
-    public function getUser()
-    {
-        return $this->user;
-    }
-
-    /**
      * Set contentChanged
      *
      * @param \DateTime $contentChanged
@@ -360,71 +356,6 @@ class Groups
         return $this->group_topic;
     }
 
-    /**
-     * Add group_topic_comment
-     *
-     * @param \Groups\ModelBundle\Entity\GroupTopicComment $groupTopicComment
-     * @return Groups
-     */
-    public function addGroupTopicComment(\Groups\ModelBundle\Entity\GroupTopicComment $groupTopicComment)
-    {
-        $this->group_topic_comment[] = $groupTopicComment;
-
-        return $this;
-    }
-
-    /**
-     * Remove group_topic_comment
-     *
-     * @param \Groups\ModelBundle\Entity\GroupTopicComment $groupTopicComment
-     */
-    public function removeGroupTopicComment(\Groups\ModelBundle\Entity\GroupTopicComment $groupTopicComment)
-    {
-        $this->group_topic_comment->removeElement($groupTopicComment);
-    }
-
-    /**
-     * Get group_topic_comment
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getGroupTopicComment()
-    {
-        return $this->group_topic_comment;
-    }
-
-    /**
-     * Add group_topic_comment_reply
-     *
-     * @param \Groups\ModelBundle\Entity\GroupTopicCommentReply $groupTopicCommentReply
-     * @return Groups
-     */
-    public function addGroupTopicCommentReply(\Groups\ModelBundle\Entity\GroupTopicCommentReply $groupTopicCommentReply)
-    {
-        $this->group_topic_comment_reply[] = $groupTopicCommentReply;
-
-        return $this;
-    }
-
-    /**
-     * Remove group_topic_comment_reply
-     *
-     * @param \Groups\ModelBundle\Entity\GroupTopicCommentReply $groupTopicCommentReply
-     */
-    public function removeGroupTopicCommentReply(\Groups\ModelBundle\Entity\GroupTopicCommentReply $groupTopicCommentReply)
-    {
-        $this->group_topic_comment_reply->removeElement($groupTopicCommentReply);
-    }
-
-    /**
-     * Get group_topic_comment_reply
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getGroupTopicCommentReply()
-    {
-        return $this->group_topic_comment_reply;
-    }
 
     /**
      * Add group_users
@@ -457,5 +388,15 @@ class Groups
     public function getGroupUsers()
     {
         return $this->group_users;
+    }
+
+    /**
+     * Get user
+     *
+     * @return \Users\ModelBundle\Entity\User 
+     */
+    public function getUser()
+    {
+        return $this->user;
     }
 }

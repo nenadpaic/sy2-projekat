@@ -21,11 +21,11 @@ class GroupsType extends AbstractType
             ->add('description', 'text', array(
                 'label' => 'form.description'
             ))
-            ->add('groupLogo', 'text', array(
+            ->add('groupLogo', 'file', array(
                 'required' => false,
                 'label' => 'form.logo'
             ))
-            ->add('groupCover','text',array(
+            ->add('groupCover','file',array(
                 'required' => false,
                 'label' => 'form.cover'
             ))
