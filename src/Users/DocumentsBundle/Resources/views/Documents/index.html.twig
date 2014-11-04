@@ -1,0 +1,22 @@
+{% extends "::base.html.twig" %}
+
+{% block title %}UsersDocumentsBundle:Documents:index{% endblock %}
+
+{% block body %}
+<h1>Welcome to the Documents:index page</h1>
+
+    {% for document in documents %}
+        <a href="{{ asset(document.profileImageDir()) }}">{{ document.getName() }}</a>
+{% if app.user and app.security.getToken().getUser().getId() == document.getUser().getId() or is_granted('ROLE_ADMIN')  %}
+    <button onclick="deletedoc({{ document.getId() }}, '{{ path('deleteDoc') }}');">Delete document <span style="display: none;" id="loader"><img src="{{ asset('public/images/loader.gif') }}" /> </span></button>
+{% endif %}
+    {% endfor %}
+    <div class="navigation">
+        {{ knp_pagination_render(documents) }}
+    </div>
+{% endblock %}
+{% block javascripts %}
+    {% javascripts '@UsersDocumentsBundle/Resources/public/js/documents-handler.js' output='js/compiled/documents.js' %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

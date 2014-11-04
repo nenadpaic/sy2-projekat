@@ -15,9 +15,14 @@ use Symfony\Component\Security\Core\Validator\Constraints as SecurityAssert;
  * User
  *
  * @ORM\Table(name="users")
- *  @ORM\Entity(repositoryClass="Users\ModelBundle\Repo\UserRepo")
+ * @ORM\Entity(repositoryClass="Users\ModelBundle\Repo\UserRepo")
+ * @UniqueEntity(
+ *     fields={"username", "email"},
+ *     errorPath="port",
+ *     message="This username or email already exist"
+ * )
  */
-class User implements AdvancedUserInterface
+class User implements AdvancedUserInterface, \Serializable
 {
     /**
      * @var integer
@@ -34,7 +39,7 @@ class User implements AdvancedUserInterface
      * @ORM\Column(name="username", type="string", length=255, unique=true)
      * @Assert\Regex(pattern="/^[a-zA-Z0-9_]+$/i",htmlPattern = "^[a-zA-Z0-9_]+$", match=true, message="Your username can contain only alphanumeric characters and underscores", groups={"registration"})
      * @Assert\NotBlank(groups={"registration"})
-     * @Assert\Length(min=2, max=20, minMessage="Username can not be less than {{ limit }} long", maxMessage="Username can not be longer than {{ limit }} characters long", groups={"registration"})
+     * @Assert\Length(min=4, max=20, minMessage="Username can not be less than {{ limit }} long", maxMessage="Username can not be longer than {{ limit }} characters long", groups={"registration"})
      */
     private $username;
 
@@ -62,7 +67,7 @@ class User implements AdvancedUserInterface
     /**
      * @var string
      * @ORM\Column(name="first_name", type="string", length=255)
-     * @Assert\Regex(pattern="/^[a-zA-Z0-9_]+$/i",htmlPattern = "^[a-zA-Z0-9_]+$", match=true, message="Your First name can contain only alphanumeric characters", groups={"registration", "profile"})
+     * @Assert\Regex(pattern="/^[a-zA-Z0-9_']+$/i",htmlPattern = "^[a-zA-Z0-9_]+$", match=true, message="Your First name can contain only alphanumeric characters", groups={"registration", "profile"})
      * @Assert\NotBlank(groups={"registration", "profile"})
      * @Assert\Length(min=2, max=20,groups={"registration", "profile"}, minMessage="First name can not be less than {{ limit }} long", maxMessage="First name can not be longer than {{ limit }} characters long")
      *
@@ -72,7 +77,7 @@ class User implements AdvancedUserInterface
     /**
      * @var string
      * @ORM\Column(name="last_name", type="string", length=255)
-     * @Assert\Regex(pattern="/^[a-zA-Z0-9_]+$/i",htmlPattern = "^[a-zA-Z0-9_]+$", match=true, message="Your Last name can contain only alphanumeric characters and underscores",groups={"registration", "profile"})
+     * @Assert\Regex(pattern="/^[a-zA-Z0-9_']+$/i",htmlPattern = "^[a-zA-Z0-9_]+$", match=true, message="Your Last name can contain only alphanumeric characters and underscores",groups={"registration", "profile"})
      * @Assert\NotBlank(groups={"registration", "profile"})
      * @Assert\Length(min=2, max=20,groups={"registration", "profile"}, minMessage="Last name can not be less than {{ limit }} long", maxMessage="Last name can not be longer than {{ limit }} characters long")
      *
@@ -189,34 +194,26 @@ class User implements AdvancedUserInterface
      */
     private $contentChanged;
     /**
-     * @Assert\File(maxSize="1000000")
+     * @Assert\Image(maxSize="1000000")
      */
     private $file;
 
     /**
-     * @ORM\OneToMany(targetEntity="Groups\ModelBundle\Entity\Groups", mappedBy="user",cascade={"persist", "remove"}))
+     * @ORM\OneToMany(targetEntity="Galery", mappedBy="user", cascade={"persist", "remove"})
      */
-    protected $groups;
+    private $images;
 
     /**
-     * @ORM\OneToMany(targetEntity="Groups\ModelBundle\Entity\GroupTopic", mappedBy="user",cascade={"persist", "remove"}))
+     * @ORM\OneToMany(targetEntity="Documents", mappedBy="user", cascade={"persist", "remove"})
      */
-    protected $group_topic;
+    private $documents;
 
     /**
-     * @ORM\OneToMany(targetEntity="Groups\ModelBundle\Entity\GroupTopicComment", mappedBy="user",cascade={"persist", "remove"}))
+     * @ORM\OneToMany(targetEntity="TimeLine", mappedBy="user", cascade={"persist", "remove"})
      */
-    protected $group_topic_comment;
+    private $timeline;
 
-    /**
-     * @ORM\OneToMany(targetEntity="Groups\ModelBundle\Entity\GroupTopicCommentReply", mappedBy="user",cascade={"persist", "remove"}))
-     */
-    protected $group_topic_comment_reply;
 
-    /**
-     * @ORM\OneToMany(targetEntity="Groups\ModelBundle\Entity\GroupUsers", mappedBy="user",cascade={"persist", "remove"}))
-     */
-    protected $group_users;
 
     public function setFile(UploadedFile $file){
         $this->file = $file;
@@ -234,7 +231,6 @@ class User implements AdvancedUserInterface
     {
         return $this->id;
     }
-
 
     public function upload()
     {
@@ -279,7 +275,7 @@ class User implements AdvancedUserInterface
     }
 
     public function getAbsolutePathTimeline(){
-        return null === $this->profileImage
+        return null === $this->timeLineImage
             ? ""
             : $this->getUploadRootDirTimeline() . '/'. $this->timeLineImage;
     }
@@ -306,7 +302,7 @@ class User implements AdvancedUserInterface
         }
     }
     public  function removeTimelineImg(){
-        if($this->profileImage != ''){
+        if($this->timeLineImage != ''){
             if(is_file($this->getAbsolutePathTimeline())){
                 unlink($this->getAbsolutePathTimeline());
             }
@@ -860,167 +856,138 @@ class User implements AdvancedUserInterface
     }
 
     /**
-     * Add groups
+     * (PHP 5 &gt;= 5.1.0)<br/>
+     * String representation of object
+     * @link http://php.net/manual/en/serializable.serialize.php
+     * @return string the string representation of the object or null
+     */
+    public function serialize()
+    {
+        return serialize(array(
+           $this->id,
+            $this->username,
+            $this->password,
+            $this->roles
+        ));
+    }
+
+    /**
+     * (PHP 5 &gt;= 5.1.0)<br/>
+     * Constructs the object
+     * @link http://php.net/manual/en/serializable.unserialize.php
+     * @param string $serialized <p>
+     * The string representation of the object.
+     * </p>
+     * @return void
+     */
+    public function unserialize($serialized)
+    {
+        list (
+            $this->id,
+            $this->username,
+            $this->password,
+            $this->roles
+            // see section on salt below
+            // $this->salt
+            ) = unserialize($serialized);
+    }
+
+    /**
+     * Add images
      *
-     * @param \Groups\ModelBundle\Entity\Groups $groups
+     * @param \Users\ModelBundle\Entity\Galery $images
      * @return User
      */
-    public function addGroup(\Groups\ModelBundle\Entity\Groups $groups)
+    public function addImage(\Users\ModelBundle\Entity\Galery $images)
     {
-        $this->groups[] = $groups;
+        $this->images[] = $images;
 
         return $this;
     }
 
     /**
-     * Remove groups
+     * Remove images
      *
-     * @param \Groups\ModelBundle\Entity\Groups $groups
+     * @param \Users\ModelBundle\Entity\Galery $images
      */
-    public function removeGroup(\Groups\ModelBundle\Entity\Groups $groups)
+    public function removeImage(\Users\ModelBundle\Entity\Galery $images)
     {
-        $this->groups->removeElement($groups);
+        $this->images->removeElement($images);
     }
 
     /**
-     * Get groups
+     * Get images
      *
      * @return \Doctrine\Common\Collections\Collection 
      */
-    public function getGroups()
+    public function getImages()
     {
-        return $this->groups;
+        return $this->images;
     }
 
     /**
-     * Add group_topic
+     * Add documents
      *
-     * @param \Groups\ModelBundle\Entity\GroupTopic $groupTopic
+     * @param \Users\ModelBundle\Entity\Documents $documents
      * @return User
      */
-    public function addGroupTopic(\Groups\ModelBundle\Entity\GroupTopic $groupTopic)
+    public function addDocument(\Users\ModelBundle\Entity\Documents $documents)
     {
-        $this->group_topic[] = $groupTopic;
+        $this->documents[] = $documents;
 
         return $this;
     }
 
     /**
-     * Remove group_topic
+     * Remove documents
      *
-     * @param \Groups\ModelBundle\Entity\GroupTopic $groupTopic
+     * @param \Users\ModelBundle\Entity\Documents $documents
      */
-    public function removeGroupTopic(\Groups\ModelBundle\Entity\GroupTopic $groupTopic)
+    public function removeDocument(\Users\ModelBundle\Entity\Documents $documents)
     {
-        $this->group_topic->removeElement($groupTopic);
+        $this->documents->removeElement($documents);
     }
 
     /**
-     * Get group_topic
+     * Get documents
      *
      * @return \Doctrine\Common\Collections\Collection 
      */
-    public function getGroupTopic()
+    public function getDocuments()
     {
-        return $this->group_topic;
+        return $this->documents;
     }
 
     /**
-     * Add group_topic_comment
+     * Add timeline
      *
-     * @param \Groups\ModelBundle\Entity\GroupTopicComment $groupTopicComment
+     * @param \Users\ModelBundle\Entity\Timeline $timeline
      * @return User
      */
-    public function addGroupTopicComment(\Groups\ModelBundle\Entity\GroupTopicComment $groupTopicComment)
+    public function addTimeline(\Users\ModelBundle\Entity\Timeline $timeline)
     {
-        $this->group_topic_comment[] = $groupTopicComment;
+        $this->timeline[] = $timeline;
 
         return $this;
     }
 
     /**
-     * Remove group_topic_comment
+     * Remove timeline
      *
-     * @param \Groups\ModelBundle\Entity\GroupTopicComment $groupTopicComment
+     * @param \Users\ModelBundle\Entity\Timeline $timeline
      */
-    public function removeGroupTopicComment(\Groups\ModelBundle\Entity\GroupTopicComment $groupTopicComment)
+    public function removeTimeline(\Users\ModelBundle\Entity\Timeline $timeline)
     {
-        $this->group_topic_comment->removeElement($groupTopicComment);
+        $this->timeline->removeElement($timeline);
     }
 
     /**
-     * Get group_topic_comment
+     * Get timeline
      *
      * @return \Doctrine\Common\Collections\Collection 
      */
-    public function getGroupTopicComment()
+    public function getTimeline()
     {
-        return $this->group_topic_comment;
-    }
-
-    /**
-     * Add group_topic_comment_reply
-     *
-     * @param \Groups\ModelBundle\Entity\GroupTopicCommentReply $groupTopicCommentReply
-     * @return User
-     */
-    public function addGroupTopicCommentReply(\Groups\ModelBundle\Entity\GroupTopicCommentReply $groupTopicCommentReply)
-    {
-        $this->group_topic_comment_reply[] = $groupTopicCommentReply;
-
-        return $this;
-    }
-
-    /**
-     * Remove group_topic_comment_reply
-     *
-     * @param \Groups\ModelBundle\Entity\GroupTopicCommentReply $groupTopicCommentReply
-     */
-    public function removeGroupTopicCommentReply(\Groups\ModelBundle\Entity\GroupTopicCommentReply $groupTopicCommentReply)
-    {
-        $this->group_topic_comment_reply->removeElement($groupTopicCommentReply);
-    }
-
-    /**
-     * Get group_topic_comment_reply
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getGroupTopicCommentReply()
-    {
-        return $this->group_topic_comment_reply;
-    }
-
-    /**
-     * Add group_users
-     *
-     * @param \Groups\ModelBundle\Entity\GroupUsers $groupUsers
-     * @return User
-     */
-    public function addGroupUser(\Groups\ModelBundle\Entity\GroupUsers $groupUsers)
-    {
-        $this->group_users[] = $groupUsers;
-
-        return $this;
-    }
-
-    /**
-     * Remove group_users
-     *
-     * @param \Groups\ModelBundle\Entity\GroupUsers $groupUsers
-     */
-    public function removeGroupUser(\Groups\ModelBundle\Entity\GroupUsers $groupUsers)
-    {
-        $this->group_users->removeElement($groupUsers);
-    }
-
-    /**
-     * Get group_users
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getGroupUsers()
-    {
-        return $this->group_users;
+        return $this->timeline;
     }
 }

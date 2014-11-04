@@ -1,0 +1,27 @@
+{% extends "::base.html.twig" %}
+
+{% block title %}{{ galery.getName() }}{% endblock %}
+
+{% block body %}
+<h1>{{ galery.getName() }}</h1>
+{% if app.user and app.security.getToken().getUser().getId() == galery.getUser().getId()%}
+    <h3>Actions</h3>
+    {{ form(delete_form) }}
+
+    <a href="{{ path('upload_image_galery', {"galery_id" : galery.getId()}) }}">Upload image</a>
+{% endif %}
+    <hr/>
+     {% for picture in pictures %}
+<a class="example-image-link" href="{{ asset(picture.profileImageDir()) }}" data-lightbox="example-1"><img class="example-image" src="{{ asset(picture.profileImageDir()) }}" alt="{{ picture.name }}" width="100" height="100"/></a>
+{% if app.user and app.security.getToken().getUser().getId() == galery.getUser().getId() or is_granted('ROLE_ADMIN')  %}
+         <button onclick="removeGaleryImage({{ picture.getId }}, '{{ path('delete_image_galery') }}')">Delete image <span style="display: none;" id="loader"><img src="{{ asset('public/images/loader.gif') }}" /> </span></button>
+{% endif %}
+     {% endfor %}
+
+    {{ knp_pagination_render(pictures) }}
+{% endblock %}
+{% block javascripts %}
+    {% javascripts '@UsersGaleryBundle/Resources/public/js/galery-front.js' output='js/compiled/galery.js' %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

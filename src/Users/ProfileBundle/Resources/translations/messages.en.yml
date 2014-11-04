@@ -10,6 +10,10 @@ profile:
   city: City
   address: Address
   phone: Phone
+  galeries: Galeries
+  documents: Documents
+  documents_all: All documents
+  create_doc: Upload new document
 profile-pass:
   title: Change pasword
   main_title: Change password

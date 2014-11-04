@@ -86,6 +86,24 @@
     {% for r in roles %}
        <button onclick="addRole({{ entity.id }}, {{ r.getId() }}, '{{ path("admin_add_role") }}')">{{ r.name }}</button>
     {% endfor %}
+    <h2>Profile image</h2>
+    <p><strong>Actions</strong><button onclick="removeProfileImage({{ entity.getId() }}, '{{ path('admin_remove_profile_img') }}')">Delete</button></p>
+    {% if entity.getProfileImage() != "" %}
+        <img src="{{ asset(entity.profileImageDir()) }}" alt="profile image"/>
+    {% else %}
+        <img src="" alt="No picture for this profile"/>
+    {% endif %}
+    <h2>Timeline image</h2>
+    <p><strong>Actions</strong><button onclick="removeTimelineImage({{ entity.getId() }}, '{{ path('admin_remove_timeline_img') }}')">Delete</button></p>
+    {% if entity.getTimeLineImage() != "" %}
+        <img src="{{ asset(entity.timelineImageDir()) }}" alt="timeline image"/>
+    {% else %}
+        <img src="" alt="There is no timeline image"/>
+    {% endif %}
+    <h2>Galeries</h2>
+    {% for galery in entity.getImages() %}
+        <a href="{{ path('show_galery', {'id' : galery.getId()})  }}"><h3>{{ galery.getName() }}</h3></a>
+    {% endfor %}
 
 {% endblock %}
 {% block javascripts %}

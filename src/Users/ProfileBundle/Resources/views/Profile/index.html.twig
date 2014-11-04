@@ -4,8 +4,12 @@
 
 {% block body %}
     <h1>{{ 'profile.main_title' | trans }}</h1>
+    {% if user.getTimeLineImage() != "" %}
     <img src="{{ asset(user.timelineImageDir()) }}" alt=""/>
+    {% endif %}
+    {% if user.getProfileImage() != "" %}
     <img src="{{ asset(user.profileImageDir()) }}" alt=""/>
+    {% endif %}
     <p><strong>{{ 'profile.username' | trans }}</strong>:{{ user.getUsername() }}</p>
     <p><strong>{{ 'profile.email' | trans }}</strong>: {{ user.getEmail() }}</p>
     <p><strong>{{ 'profile.first_name' | trans }}</strong>: {{ user.getFirstName() }}</p>
@@ -15,6 +19,55 @@
     <p><strong>{{ 'profile.city' | trans }}</strong>: {{ user.getCity() }}</p>
     <p><strong>{{ 'profile.address' | trans }}</strong>: {{ user.getAddress() }}</p>
     <p><strong>{{ 'profile.phone' | trans }}</strong>: {{ user.getPhone }}</p>
+<h2>{{ 'profile.galeries' | trans }}</h2>
+{% if app.user and app.security.getToken().getUser().getId() == user.getId()%}
+    <a href="{{ path('create_new_galery') }}">{{ 'galeries.create' | trans }}</a>
+{% endif %}
+    <a href="{{ path('galeries', {'user_id': user.getId()}) }}">{{ 'galeries.all' | trans }}</a>
+    {% for galery in galeries %}
+        <a href="{{ path('show_galery', {'id' : galery.getId()})  }}"><h3>{{ galery.getName() }}</h3></a>
+    {% endfor %}
+    <h2>{{ 'profile.documents' | trans }}</h2>
+    {% if app.user and app.security.getToken().getUser().getId() == user.getId()%}
+        <a href="{{ path('upload_document') }}">{{ 'profile.create_doc' | trans }}</a>
+    {% endif %}
+    <a href="{{ path('documents_all', {'user_id': user.getId()}) }}">{{ 'profile.documents_all' | trans }}</a>
+    {% for document in documents %}
+        <a href="{{ asset(document.profileImageDir()) }}">{{ document.getName() }}</a>
+    {% endfor %}
 
+    <h2>Timeline</h2>
+    <div ng-app="profile">
+        <ng-view>
+
+        </ng-view>
+    </div>
+{% endblock %}
+{% block javascripts %}
+    <script type="text/javascript">
+        var path_time_line = "{{ path('timelineAll') }}";
+        var nonce = "{{ nonce }}";
+        var user_id = {{ user.getId() }};
+    </script>
+        {% javascripts '@UsersProfileBundle/Resources/public/js/app.js' output='js/compiled/app.js' %}
+        <script src="{{ asset_url }}"></script>
+        {% endjavascripts %}
+
+        {% javascripts '@UsersProfileBundle/Resources/public/js/controller/profile.js' output='js/compiled/profile.js' %}
+        <script src="{{ asset_url }}"></script>
+        {% endjavascripts %}
+
+
+        {% javascripts '@UsersProfileBundle/Resources/public/js/routes/routes.js' output='js/compiled/routes.js' %}
+        <script src="{{ asset_url }}"></script>
+        {% endjavascripts %}
+
+    {% javascripts '@UsersProfileBundle/Resources/public/js/services/services.js' output='js/compiled/services.js' %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+    {% javascripts '@UsersProfileBundle/Resources/public/js/directives/directives.js' output='js/compiled/directives.js' %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
 
 {% endblock %}

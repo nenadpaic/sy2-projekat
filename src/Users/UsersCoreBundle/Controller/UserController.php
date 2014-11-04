@@ -351,4 +351,81 @@ class UserController extends Controller
 
         return new Response('This is not ajax!', 400);
     }
+
+    /**
+     * Removes profile image from user
+     * @param Request $request
+     * @throws \Exception
+     * @internal param user_id $int
+     * @return JsonResponse
+     * @Route("/remove/profile/image", name="admin_remove_profile_img")
+     * @Method("POST")
+     */
+    public function removeProfileImageAction(Request $request)
+    {
+        if ($request->isXMLHttpRequest()) {
+            $data = $request->request->all();
+
+            $userId = (int) $data['user_id'];
+            $em = $this->getDoctrine()->getManager();
+
+            $user = $em->getRepository('ModelBundle:User')->find($userId);
+            if(!$user){
+                throw $this->createNotFoundException('Such user does not exist');
+            }
+            $user->removeProfileImg();
+            $user->setProfileImage(" ");
+            $em->persist($user);
+            $em->flush();
+            $response = new JsonResponse();
+            $response->setData(array(
+                'message' => 'Successfuly removed profile image from user'
+            ));
+
+            return $response;
+        }
+
+        return new Response('This is not ajax!', 400);
+    }
+
+    /**
+     * Removes timeline image from user
+     * @param Request $request
+     * @throws \Exception
+     * @internal param user_id $int
+     * @return JsonResponse
+     * @Route("/remove/timeline/image", name="admin_remove_timeline_img")
+     * @Method("POST")
+     */
+    public function removeTimelineAction(Request $request)
+    {
+        if ($request->isXMLHttpRequest()) {
+            $data = $request->request->all();
+
+            $userId = (int) $data['user_id'];
+            $em = $this->getDoctrine()->getManager();
+
+            $user = $em->getRepository('ModelBundle:User')->find($userId);
+            if(!$user){
+                throw $this->createNotFoundException('Such user does not exist');
+            }
+            $user->removeTimelineImg();
+            $user->setTimeLineImage(" ");
+            $em->persist($user);
+            $em->flush();
+            $response = new JsonResponse();
+            $response->setData(array(
+                'message' => 'Successfuly removed timeline image from user'
+            ));
+
+            return $response;
+        }
+
+        return new Response('This is not ajax!', 400);
+    }
+
+
+
+
+
 }

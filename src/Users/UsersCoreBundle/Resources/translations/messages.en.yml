@@ -1,6 +1,9 @@
 login:
   title: Login
   main_title: Login
+  username: Username
+  password: Password
+  button: Login
 register:
   title: Register
   main_title: Register

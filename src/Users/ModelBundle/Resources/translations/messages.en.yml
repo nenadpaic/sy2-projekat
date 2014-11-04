@@ -26,6 +26,7 @@ profile-data:
   password: Password
   rep-password: Repeat password
   email: Email
+  button: Register
 profile-image:
   title: Change profile image
   main_title: Profile picture
@@ -33,4 +34,15 @@ profile-image:
 profile-timeline:
   title: Change timeline image
   main_title: Timeline picture
+galeries:
+  name: Name of galery
+  button: Create galery
+picture:
+  file: Image
+  button: Upload image
+  name: Title of image
+document:
+  name: Document name
+  file: Upload file
+  button: Upload
 

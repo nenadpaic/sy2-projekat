@@ -33,7 +33,7 @@ class RegisterType extends AbstractType
             ->add('city', 'text', array('label' => 'profile-data.city') )
             ->add('address', 'text', array('label' => 'profile-data.address'))
             ->add('phone', 'text', array('label' => 'profile-data.phone'))
-            ->add('save', 'submit',array('attr' => array('class' => 'save')));
+            ->add('save', 'submit',array('attr' => array('class' => 'save'), 'label' => 'profile-data.button'));
     }
 
     /**
@@ -43,7 +43,8 @@ class RegisterType extends AbstractType
     {
         $resolver->setDefaults(array(
             'data_class' => 'Users\ModelBundle\Entity\User',
-            'validation_groups' => array('registration')
+            'validation_groups' => array('registration'),
+
         ));
     }
 

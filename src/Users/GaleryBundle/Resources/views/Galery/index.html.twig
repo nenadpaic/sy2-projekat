@@ -1,0 +1,19 @@
+{% extends "::base.html.twig" %}
+
+{% block title %}{{ 'galeries.title' | trans }}{% endblock %}
+
+{% block body %}
+<h1>{{ 'galeries.main_title' | trans }}</h1>
+{% if app.user and app.security.getToken().getUser().getId() == user %}
+    <a href="{{ path('create_new_galery') }}">{{ 'galeries.create' | trans }}</a>
+{% endif %}
+    {% for galery in galeries %}
+        <a href="{{ path('show_galery', {'id' : galery.getId()})  }}"><h3>{{ galery.getName() }}</h3></a>
+    {% endfor %}
+
+
+
+    <div class="navigation">
+        {{ knp_pagination_render(galeries) }}
+    </div>
+{% endblock %}

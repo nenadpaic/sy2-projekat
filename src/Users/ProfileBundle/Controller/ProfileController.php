@@ -6,6 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Users\ModelBundle\Entity\User;
 use Users\ModelBundle\Form\ChangePassType;
 use Users\ModelBundle\Form\ProfileInfoType;
@@ -24,13 +25,25 @@ class ProfileController extends Controller
      */
     public function indexAction(Request $request)
     {
+
         $id = $request->query->getInt('id');
         $userId = ($id == null)? $this->get('security.context')->getToken()->getUser()->getId() : (int) $id;
         $em = $this->getDoctrine()->getManager();
         $user = $em->getRepository('ModelBundle:User')->find($userId);
+        $galeries = $em->getRepository('ModelBundle:Galery')->lastFiveGaleries($userId);
+        $documents = $em->getRepository('ModelBundle:Documents')->lastFiveDocuments($userId);
+        $nonce = md5(uniqid(rand(time(), true)));
+        $session = $request->getSession();
+        $session->set('nonce', $nonce);
+
+
+
 
         return array(
-            'user' => $user
+            'user' => $user,
+            'galeries' => $galeries,
+            'documents' => $documents,
+            'nonce' => $nonce
         );
     }
 
