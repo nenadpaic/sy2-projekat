@@ -1,0 +1,13 @@
+@charset "utf-8";
+/* CSS Document */
+#wrapper{
+	width: 100%;
+	margin: 0;
+	padding: 0;	
+}
+.navbar-background{
+	background-color:#FDB813;
+	height:54px;
+}
+
+
