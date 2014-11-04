@@ -1,0 +1,29 @@
+<div ng-controller="TimeLineGetController">
+    <div ng-repeat="posts in timelineData">
+<newline>
+    <col>
+
+    <div ng-if="posts.delete">
+        delete
+    </div>
+    <div ng-if="posts.report">
+        report
+    </div>
+        <name>[[posts.user]]</name>
+        <date>Created at: [[posts.createdAt.date]], Last update: [[posts.updatedAt.date]]</date>
+    <content>
+        <div ng-hide="editorEnabled">
+            [[posts.content]]
+            <div ng-if="posts.edit">
+                <button ng-click="editorEnabled=!editorEnabled">Edit</button>
+            </div>
+        </div>
+        <div ng-show="editorEnabled">
+            <input type="text" ng-model="posts.content"/>
+            <button ng-click="editorEnabled=!editorEnabled">Update</button>
+        </div>
+    </content>
+    </col>
+</newline>
+    </div>
+</div>

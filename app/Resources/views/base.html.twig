@@ -3,20 +3,20 @@
     <head>
         <meta charset="UTF-8" />
         <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
-        
-        <!-- Default css -->
-        <link rel="stylesheet" type="text/css" href="{{ asset('style.css') }}">
-        <link rel="stylesheet" type="text/css" href="{{ asset('public/css/bootstrap.min.css') }}">
-        <!--End of css-->
 
-        <!--Default JS-->
-        <script src="{{ asset('public/js/jquery.js') }}"></script>
-        <script src="{{ asset('public/js/bootstrap.min.js') }}"></script>
-        <!--End of JS-->
+        <link rel="stylesheet" href="{{ asset('public/lightbox/css/screen.css') }}"/>
+        <link rel="stylesheet" href="{{ asset('public/lightbox/css/lightbox.css') }}"/>
+        {% block stylesheets %}{% endblock %}
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+        <script type="text/javascript" src="/public/js/jquery.js"></script>
+        <script type="text/javascript" src="/public//lightbox/js/lightbox.js"></script>
     </head>
     <body>
         {% block body %}{% endblock %}
+        <script type="text/javascript" src="/public/js/angular.js"></script>
+        <script type="text/javascript" src="/public/js/angular-route.js"></script>
+        <script type="text/javascript" src="/public/js/angular-resource.js"></script>
         {% block javascripts %}{% endblock %}
+
     </body>
 </html>
