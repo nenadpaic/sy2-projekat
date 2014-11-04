@@ -46,6 +46,7 @@
 {% block javascripts %}
     <script type="text/javascript">
         var path_time_line = "{{ path('timelineAll') }}";
+        var path_time_single = "{{ path('edit_timeline') }}";
         var nonce = "{{ nonce }}";
         var user_id = {{ user.getId() }};
     </script>

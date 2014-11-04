@@ -7,6 +7,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 
 class TimeLineController extends Controller
 {
@@ -23,7 +24,7 @@ class TimeLineController extends Controller
         if($nonce_s != $nonce){
             return $this->createAccessDeniedException('Access denied');
         }
-        $request->getSession()->remove('nonce');
+
 
         $id = $request->get('user_id');
 
@@ -62,14 +63,58 @@ class TimeLineController extends Controller
     }
 
     /**
-     * @Route("/update", name="update_timeline")
+     * @Route("/edit", name="edit_timeline")
+     * @Method({"GET", "POST"})
      * @Template()
      */
-    public function updateAction()
+    public function editAction(Request $request)
     {
-        return array(
-                // ...
-            );    }
+        $nonce_s = $request->getSession()->get('nonce');
+        $nonce = $request->get('nonce');
+        $em = $this->getDoctrine()->getManager();
+        if ($nonce_s != $nonce) {
+            return $this->createAccessDeniedException('Access denied');
+        }
+        if($request->isMethod('GET')) {
+
+            $post_id = (int)$request->get('post_id');
+
+            $post = $em->getRepository('ModelBundle:TimeLine')->findOneBy(array('id' => $post_id));
+            if (!$post) {
+                return $this->createNotFoundException('No such post');
+            }
+            if ($this->get('security.context')->getToken()->getUser()->getId() != $post->getUser()->getId() || !$this->get('security.context')->isGranted("ROLE_ADMIN")) {
+                return $this->createAccessDeniedException('You have no access');
+            }
+
+            $response = new JsonResponse();
+            $response->setData(array('content' => strip_tags($post->getContent()), 'id' => $post->getId()));
+            return $response;
+        }
+        if($request->isMethod('POST')){
+            $post_id = (int) $request->get('post_id');
+            $content = strip_tags($request->get('content'));
+            $post = $em->getRepository('ModelBundle:TimeLine')->findOneBy(array('id' => $post_id));
+            if (!$post) {
+                return $this->createNotFoundException('No such post');
+            }
+            if ($this->get('security.context')->getToken()->getUser()->getId() != $post->getUser()->getId() || !$this->get('security.context')->isGranted("ROLE_ADMIN")) {
+                return $this->createAccessDeniedException('You have no access');
+            }
+            $post->setContent($content);
+            $em->persist($post);
+            $em->flush();
+            $response = new JsonResponse();
+            $response->setData(array('status' => true));
+            return $response;
+
+        }
+
+    }
+
+
+
+
 
     /**
      * @Route("/delete")

@@ -214,39 +214,39 @@ class User implements AdvancedUserInterface, \Serializable
     private $timeline;
 
 	/**
-	 * @ORM\OneToMany(targetEntity="Groups\ModelBundle\Entity\Groups", mappedBy="user",cascade={"persist", "remove"})
+	 * ORM\OneToMany(targetEntity="Groups\ModelBundle\Entity\Groups", mappedBy="user",cascade={"persist", "remove"})
 	 */
-	protected $groups;
+	//protected $groups;
 
 	/**
-	 * @ORM\OneToMany(targetEntity="Groups\ModelBundle\Entity\GroupTopic", mappedBy="user",cascade={"persist", "remove"})
+	 * ORM\OneToMany(targetEntity="Groups\ModelBundle\Entity\GroupTopic", mappedBy="user",cascade={"persist", "remove"})
 	 */
-	protected $group_topic;
+	//protected $group_topic;
 
 	/**
-	 * @ORM\OneToMany(targetEntity="Groups\ModelBundle\Entity\GroupTopicComment", mappedBy="user",cascade={"persist", "remove"})
+	 * ORM\OneToMany(targetEntity="Groups\ModelBundle\Entity\GroupTopicComment", mappedBy="user",cascade={"persist", "remove"})
 	 */
-	protected $group_topic_comment;
+	//protected $group_topic_comment;
 
 	/**
-	 * @ORM\OneToMany(targetEntity="Groups\ModelBundle\Entity\GroupTopicCommentReply", mappedBy="user",cascade={"persist", "remove"})
+	 * ORM\OneToMany(targetEntity="Groups\ModelBundle\Entity\GroupTopicCommentReply", mappedBy="user",cascade={"persist", "remove"})
 	 */
-	protected $group_topic_comment_reply;
+	//protected $group_topic_comment_reply;
 
 	/**
-	 * @ORM\OneToMany(targetEntity="Groups\ModelBundle\Entity\GroupUsers", mappedBy="user",cascade={"persist", "remove"})
+	 * ORM\OneToMany(targetEntity="Groups\ModelBundle\Entity\GroupUsers", mappedBy="user",cascade={"persist", "remove"})
 	 */
-	protected $group_users;
+	//protected $group_users;
 
 	/**
-	 * @ORM\OneToMany(targetEntity="Report\ModelBundle\Entity\Reports", mappedBy="user_reporting",cascade={"persist", "remove"})
+	 * ORM\OneToMany(targetEntity="Report\ModelBundle\Entity\Reports", mappedBy="user_reporting",cascade={"persist", "remove"})
 	 */
-	protected $user_reporting;
+	//protected $user_reporting;
 
 	/**
-	 * @ORM\OneToMany(targetEntity="Report\ModelBundle\Entity\Reports", mappedBy="reported_user",cascade={"persist", "remove"})
+	 * ORM\OneToMany(targetEntity="Report\ModelBundle\Entity\Reports", mappedBy="reported_user",cascade={"persist", "remove"})
 	 */
-	protected $reported_user;
+	//protected $reported_user;
 
 
     public function setFile(UploadedFile $file){
@@ -1031,32 +1031,32 @@ class User implements AdvancedUserInterface, \Serializable
      * @param \Groups\ModelBundle\Entity\Groups $group
      * @return User
      */
-    public function addGroup(\Groups\ModelBundle\Entity\Groups $group)
+   /* public function addGroup(\Groups\ModelBundle\Entity\Groups $group)
     {
         $this->group[] = $group;
 
         return $this;
-    }
+    }*/
 
     /**
      * Remove group
      *
      * @param \Groups\ModelBundle\Entity\Groups $group
      */
-    public function removeGroup(\Groups\ModelBundle\Entity\Groups $group)
+   /* public function removeGroup(\Groups\ModelBundle\Entity\Groups $group)
     {
         $this->group->removeElement($group);
-    }
+    }*/
 
     /**
      * Get group
      *
      * @return \Doctrine\Common\Collections\Collection 
      */
-    public function getGroup()
+    /*public function getGroup()
     {
         return $this->group;
-    }
+    }*/
 
     /**
      * Add group_topic
@@ -1064,32 +1064,32 @@ class User implements AdvancedUserInterface, \Serializable
      * @param \Groups\ModelBundle\Entity\GroupTopic $groupTopic
      * @return User
      */
-    public function addGroupTopic(\Groups\ModelBundle\Entity\GroupTopic $groupTopic)
+   /* public function addGroupTopic(\Groups\ModelBundle\Entity\GroupTopic $groupTopic)
     {
         $this->group_topic[] = $groupTopic;
 
         return $this;
-    }
+    }*/
 
     /**
      * Remove group_topic
      *
      * @param \Groups\ModelBundle\Entity\GroupTopic $groupTopic
      */
-    public function removeGroupTopic(\Groups\ModelBundle\Entity\GroupTopic $groupTopic)
+   /* public function removeGroupTopic(\Groups\ModelBundle\Entity\GroupTopic $groupTopic)
     {
         $this->group_topic->removeElement($groupTopic);
-    }
+    }*/
 
     /**
      * Get group_topic
      *
      * @return \Doctrine\Common\Collections\Collection 
      */
-    public function getGroupTopic()
+   /* public function getGroupTopic()
     {
         return $this->group_topic;
-    }
+    }*/
 
     /**
      * Add group_topic_comment
@@ -1097,32 +1097,32 @@ class User implements AdvancedUserInterface, \Serializable
      * @param \Groups\ModelBundle\Entity\GroupTopicComment $groupTopicComment
      * @return User
      */
-    public function addGroupTopicComment(\Groups\ModelBundle\Entity\GroupTopicComment $groupTopicComment)
+    /*public function addGroupTopicComment(\Groups\ModelBundle\Entity\GroupTopicComment $groupTopicComment)
     {
         $this->group_topic_comment[] = $groupTopicComment;
 
         return $this;
-    }
+    }*/
 
     /**
      * Remove group_topic_comment
      *
      * @param \Groups\ModelBundle\Entity\GroupTopicComment $groupTopicComment
      */
-    public function removeGroupTopicComment(\Groups\ModelBundle\Entity\GroupTopicComment $groupTopicComment)
+    /*public function removeGroupTopicComment(\Groups\ModelBundle\Entity\GroupTopicComment $groupTopicComment)
     {
         $this->group_topic_comment->removeElement($groupTopicComment);
-    }
+    }*/
 
     /**
      * Get group_topic_comment
      *
      * @return \Doctrine\Common\Collections\Collection 
      */
-    public function getGroupTopicComment()
+   /* public function getGroupTopicComment()
     {
         return $this->group_topic_comment;
-    }
+    }*/
 
     /**
      * Add group_topic_comment_reply
@@ -1130,32 +1130,32 @@ class User implements AdvancedUserInterface, \Serializable
      * @param \Groups\ModelBundle\Entity\GroupTopicCommentReply $groupTopicCommentReply
      * @return User
      */
-    public function addGroupTopicCommentReply(\Groups\ModelBundle\Entity\GroupTopicCommentReply $groupTopicCommentReply)
+   /* public function addGroupTopicCommentReply(\Groups\ModelBundle\Entity\GroupTopicCommentReply $groupTopicCommentReply)
     {
         $this->group_topic_comment_reply[] = $groupTopicCommentReply;
 
         return $this;
-    }
+    }*/
 
     /**
      * Remove group_topic_comment_reply
      *
      * @param \Groups\ModelBundle\Entity\GroupTopicCommentReply $groupTopicCommentReply
      */
-    public function removeGroupTopicCommentReply(\Groups\ModelBundle\Entity\GroupTopicCommentReply $groupTopicCommentReply)
+   /* public function removeGroupTopicCommentReply(\Groups\ModelBundle\Entity\GroupTopicCommentReply $groupTopicCommentReply)
     {
         $this->group_topic_comment_reply->removeElement($groupTopicCommentReply);
-    }
+    }*/
 
     /**
      * Get group_topic_comment_reply
      *
      * @return \Doctrine\Common\Collections\Collection 
      */
-    public function getGroupTopicCommentReply()
+   /* public function getGroupTopicCommentReply()
     {
         return $this->group_topic_comment_reply;
-    }
+    }*/
 
     /**
      * Add group_users
@@ -1163,32 +1163,32 @@ class User implements AdvancedUserInterface, \Serializable
      * @param \Groups\ModelBundle\Entity\GroupUsers $groupUsers
      * @return User
      */
-    public function addGroupUser(\Groups\ModelBundle\Entity\GroupUsers $groupUsers)
+    /*public function addGroupUser(\Groups\ModelBundle\Entity\GroupUsers $groupUsers)
     {
         $this->group_users[] = $groupUsers;
 
         return $this;
-    }
+    }*/
 
     /**
      * Remove group_users
      *
      * @param \Groups\ModelBundle\Entity\GroupUsers $groupUsers
      */
-    public function removeGroupUser(\Groups\ModelBundle\Entity\GroupUsers $groupUsers)
+   /* public function removeGroupUser(\Groups\ModelBundle\Entity\GroupUsers $groupUsers)
     {
         $this->group_users->removeElement($groupUsers);
-    }
+    }*/
 
     /**
      * Get group_users
      *
      * @return \Doctrine\Common\Collections\Collection 
      */
-    public function getGroupUsers()
+    /*public function getGroupUsers()
     {
         return $this->group_users;
-    }
+    }*/
 
     /**
      * Add user_reporting
@@ -1196,32 +1196,32 @@ class User implements AdvancedUserInterface, \Serializable
      * @param \Report\ModelBundle\Entity\Reports $userReporting
      * @return User
      */
-    public function addUserReporting(\Report\ModelBundle\Entity\Reports $userReporting)
+   /* public function addUserReporting(\Report\ModelBundle\Entity\Reports $userReporting)
     {
         $this->user_reporting[] = $userReporting;
 
         return $this;
-    }
+    }*/
 
     /**
      * Remove user_reporting
      *
      * @param \Report\ModelBundle\Entity\Reports $userReporting
      */
-    public function removeUserReporting(\Report\ModelBundle\Entity\Reports $userReporting)
+    /*public function removeUserReporting(\Report\ModelBundle\Entity\Reports $userReporting)
     {
         $this->user_reporting->removeElement($userReporting);
-    }
+    }*/
 
     /**
      * Get user_reporting
      *
      * @return \Doctrine\Common\Collections\Collection 
      */
-    public function getUserReporting()
+   /* public function getUserReporting()
     {
         return $this->user_reporting;
-    }
+    }*/
 
     /**
      * Add reported_user
@@ -1229,40 +1229,40 @@ class User implements AdvancedUserInterface, \Serializable
      * @param \Report\ModelBundle\Entity\Reports $reportedUser
      * @return User
      */
-    public function addReportedUser(\Report\ModelBundle\Entity\Reports $reportedUser)
+   /* public function addReportedUser(\Report\ModelBundle\Entity\Reports $reportedUser)
     {
         $this->reported_user[] = $reportedUser;
 
         return $this;
-    }
+    }*/
 
     /**
      * Remove reported_user
      *
      * @param \Report\ModelBundle\Entity\Reports $reportedUser
      */
-    public function removeReportedUser(\Report\ModelBundle\Entity\Reports $reportedUser)
+    /*public function removeReportedUser(\Report\ModelBundle\Entity\Reports $reportedUser)
     {
         $this->reported_user->removeElement($reportedUser);
-    }
+    }*/
 
     /**
      * Get reported_user
      *
      * @return \Doctrine\Common\Collections\Collection 
      */
-    public function getReportedUser()
+    /*public function getReportedUser()
     {
         return $this->reported_user;
-    }
+    }*/
 
     /**
      * Get groups
      *
      * @return \Doctrine\Common\Collections\Collection 
      */
-    public function getGroups()
+   /* public function getGroups()
     {
         return $this->groups;
-    }
+    }*/
 }
