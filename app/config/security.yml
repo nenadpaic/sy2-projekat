@@ -19,10 +19,14 @@ security:
                 pattern:   ^/
                 anonymous: true
                 form_login:
+                    target_path_parameter: register
                     login_path: login
                     check_path: login_check
+                    success_handler: authentication_handler
 
 
     access_control:
         - { path: ^/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/admin, roles: ROLE_ADMIN }
+        - { path: ^/en/admin, roles: ROLE_ADMIN }
+        - { path: ^/en/users, roles: ROLE_USER }
+        - { path: ^/mk/users, roles: ROLE_USER }

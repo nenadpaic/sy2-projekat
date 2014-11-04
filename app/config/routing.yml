@@ -1,12 +1,21 @@
-default_tables_model:
-    resource: "@DefaultTablesModelBundle/Controller/"
+users_time_line:
+    resource: "@UsersTimeLineBundle/Controller/"
     type:     annotation
-    prefix:   /
+    prefix:   /users/timeline
 
-default_tables_core:
-    resource: "@DefaultTablesCoreBundle/Controller/"
+users_documents:
+    resource: "@UsersDocumentsBundle/Controller/"
     type:     annotation
-    prefix:   /
+    prefix:   /{_locale}/users
+    requirements:
+          _locale: en|mk
+
+users_galery:
+    resource: "@UsersGaleryBundle/Controller/"
+    type:     annotation
+    prefix:   /{_locale}/users
+    requirements:
+      _locale: en|mk
 
 users_profile:
     resource: "@UsersProfileBundle/Controller/"
@@ -28,9 +37,3 @@ login_check:
 logout:
     path: /logout
 
-groups_core:
-    resource: "@GroupsCoreBundle/Controller/"
-    type:     annotation
-    prefix:   /{_locale}
-    requirements:
-              _locale: en|mk

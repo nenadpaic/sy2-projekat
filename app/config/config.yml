@@ -5,6 +5,7 @@ imports:
 
 framework:
     #esi:             ~
+
     translator:      { fallback: "%locale%" }
     default_locale: en
     secret:          "%secret%"
@@ -35,7 +36,7 @@ twig:
 assetic:
     debug:          "%kernel.debug%"
     use_controller: true
-    bundles:        ["UsersUsersCoreBundle" ]
+    bundles:        ["UsersUsersCoreBundle", "UsersGaleryBundle", "UsersDocumentsBundle", "UsersProfileBundle" ]
     #java: /usr/bin/java
     filters:
         cssrewrite: ~
