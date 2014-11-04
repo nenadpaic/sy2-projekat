@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * GroupTopic
  *
  * @ORM\Table(name="group_topics")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Groups\ModelBundle\Repo\GroupTopicRepo")
  */
 class GroupTopic
 {
@@ -29,6 +29,11 @@ class GroupTopic
      * @var string
      *
      * @ORM\Column(name="title", type="string", length=255)
+     * @Assert\Regex(pattern="/^[a-zA-Z0-9_-' ]+$/i",htmlPattern = "^[a-zA-Z0-9_-' ]+$",match=true,
+     * message="groups.no_special_chars")
+     * @Assert\NotBlank()
+     * @Assert\Length(min=2, max=60, minMessage="Topic title can not be less than {{ limit }} characters long", maxMessage="Topic title can not be longer than {{ limit }} characters long")
+
      */
     private $title;
 
@@ -36,6 +41,8 @@ class GroupTopic
      * @var string
      *
      * @ORM\Column(name="message", type="text")
+     * @Assert\NotBlank()
+     * @Assert\Length(min=2, max=2000, minMessage="Topic message can not be less than {{ limit }} characters long", maxMessage="Topic message can not be longer than {{ limit }} characters long")
      */
     private $message;
 
@@ -63,21 +70,19 @@ class GroupTopic
 
 
     /**
-     * @ORM\ManyToOne(targetEntity="Users\ModelBundle\Entity\User", inversedBy="group_topic",cascade={"persist",
-     * "remove"}))
+     * @ORM\ManyToOne(targetEntity="Users\ModelBundle\Entity\User", inversedBy="group_topic"))
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      */
     protected $user;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Groups\ModelBundle\Entity\Groups", inversedBy="group_topic",cascade={"persist",
-     * "remove"}))
+     * @ORM\ManyToOne(targetEntity="Groups\ModelBundle\Entity\Groups", inversedBy="group_topic"))
      * @ORM\JoinColumn(name="group_id", referencedColumnName="id")
      */
     protected $group;
 
     /**
-     * @ORM\OneToMany(targetEntity="Groups\ModelBundle\Entity\GroupTopicComment", mappedBy="group_topic")
+     * @ORM\OneToMany(targetEntity="Groups\ModelBundle\Entity\GroupTopicComment", mappedBy="group_topic",cascade={"persist", "remove"})
      */
     protected $group_topic_comment;
 
@@ -90,29 +95,6 @@ class GroupTopic
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set groupId
-     *
-     * @param integer $groupId
-     * @return GroupTopic
-     */
-    public function setGroupId($groupId)
-    {
-        $this->groupId = $groupId;
-
-        return $this;
-    }
-
-    /**
-     * Get groupId
-     *
-     * @return integer 
-     */
-    public function getGroupId()
-    {
-        return $this->groupId;
     }
 
     /**
@@ -136,29 +118,6 @@ class GroupTopic
     public function getTitle()
     {
         return $this->title;
-    }
-
-    /**
-     * Set userId
-     *
-     * @param integer $userId
-     * @return GroupTopic
-     */
-    public function setUserId($userId)
-    {
-        $this->userId = $userId;
-
-        return $this;
-    }
-
-    /**
-     * Get userId
-     *
-     * @return integer 
-     */
-    public function getUserId()
-    {
-        return $this->userId;
     }
 
     /**
@@ -315,39 +274,6 @@ class GroupTopic
     public function getGroupTopicComment()
     {
         return $this->group_topic_comment;
-    }
-
-    /**
-     * Add group_topic_comment_reply
-     *
-     * @param \Groups\ModelBundle\Entity\GroupTopicCommentReply $groupTopicCommentReply
-     * @return GroupTopic
-     */
-    public function addGroupTopicCommentReply(\Groups\ModelBundle\Entity\GroupTopicCommentReply $groupTopicCommentReply)
-    {
-        $this->group_topic_comment_reply[] = $groupTopicCommentReply;
-
-        return $this;
-    }
-
-    /**
-     * Remove group_topic_comment_reply
-     *
-     * @param \Groups\ModelBundle\Entity\GroupTopicCommentReply $groupTopicCommentReply
-     */
-    public function removeGroupTopicCommentReply(\Groups\ModelBundle\Entity\GroupTopicCommentReply $groupTopicCommentReply)
-    {
-        $this->group_topic_comment_reply->removeElement($groupTopicCommentReply);
-    }
-
-    /**
-     * Get group_topic_comment_reply
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getGroupTopicCommentReply()
-    {
-        return $this->group_topic_comment_reply;
     }
 
     /**

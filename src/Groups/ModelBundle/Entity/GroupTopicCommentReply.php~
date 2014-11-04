@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * GroupTopicCommentReply
  *
  * @ORM\Table(name="group_topic_comments_replies")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Groups\ModelBundle\Repo\GroupTopicCommentRepliesRepo")
  */
 class GroupTopicCommentReply
 {
@@ -27,6 +27,9 @@ class GroupTopicCommentReply
      * @var string
      *
      * @ORM\Column(name="message", type="text")
+     * @Assert\NotBlank()
+     * @Assert\Length(min=2, max=2000, minMessage="Reply can not be less than {{ limit }} characters long", maxMessage="Reply can not be longer than {{ limit }} characters long")
+
      */
     private $message;
 
@@ -53,16 +56,14 @@ class GroupTopicCommentReply
     private $contentChanged;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Users\ModelBundle\Entity\User", inversedBy="group_topic_comment_reply",cascade={"persist",
-     * "remove"}))
+     * @ORM\ManyToOne(targetEntity="Users\ModelBundle\Entity\User", inversedBy="group_topic_comment_reply"))
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      */
     protected $user;
 
 
     /**
-     * @ORM\ManyToOne(targetEntity="Groups\ModelBundle\Entity\GroupTopicComment", inversedBy="group_topic_comment_reply",cascade={"persist",
-     * "remove"}))
+     * @ORM\ManyToOne(targetEntity="Groups\ModelBundle\Entity\GroupTopicComment", inversedBy="group_topic_comment_reply"))
      * @ORM\JoinColumn(name="comment_id", referencedColumnName="id")
      */
     protected $group_topic_comment;
@@ -76,75 +77,6 @@ class GroupTopicCommentReply
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set groupId
-     *
-     * @param integer $groupId
-     * @return GroupTopicCommentReply
-     */
-    public function setGroupId($groupId)
-    {
-        $this->groupId = $groupId;
-
-        return $this;
-    }
-
-    /**
-     * Get groupId
-     *
-     * @return integer 
-     */
-    public function getGroupId()
-    {
-        return $this->groupId;
-    }
-
-    /**
-     * Set topicId
-     *
-     * @param integer $topicId
-     * @return GroupTopicCommentReply
-     */
-    public function setTopicId($topicId)
-    {
-        $this->topicId = $topicId;
-
-        return $this;
-    }
-
-    /**
-     * Get topicId
-     *
-     * @return integer 
-     */
-    public function getTopicId()
-    {
-        return $this->topicId;
-    }
-
-    /**
-     * Set commentId
-     *
-     * @param integer $commentId
-     * @return GroupTopicCommentReply
-     */
-    public function setCommentId($commentId)
-    {
-        $this->commentId = $commentId;
-
-        return $this;
-    }
-
-    /**
-     * Get commentId
-     *
-     * @return integer 
-     */
-    public function getCommentId()
-    {
-        return $this->commentId;
     }
 
     /**
@@ -237,52 +169,6 @@ class GroupTopicCommentReply
     public function getUser()
     {
         return $this->user;
-    }
-
-    /**
-     * Set group
-     *
-     * @param \Groups\ModelBundle\Entity\Groups $group
-     * @return GroupTopicCommentReply
-     */
-    public function setGroup(\Groups\ModelBundle\Entity\Groups $group = null)
-    {
-        $this->group = $group;
-
-        return $this;
-    }
-
-    /**
-     * Get group
-     *
-     * @return \Groups\ModelBundle\Entity\Groups 
-     */
-    public function getGroup()
-    {
-        return $this->group;
-    }
-
-    /**
-     * Set group_topic
-     *
-     * @param \Groups\ModelBundle\Entity\GroupTopic $groupTopic
-     * @return GroupTopicCommentReply
-     */
-    public function setGroupTopic(\Groups\ModelBundle\Entity\GroupTopic $groupTopic = null)
-    {
-        $this->group_topic = $groupTopic;
-
-        return $this;
-    }
-
-    /**
-     * Get group_topic
-     *
-     * @return \Groups\ModelBundle\Entity\GroupTopic 
-     */
-    public function getGroupTopic()
-    {
-        return $this->group_topic;
     }
 
     /**

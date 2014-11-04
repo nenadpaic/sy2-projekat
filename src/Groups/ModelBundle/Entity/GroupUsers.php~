@@ -23,7 +23,6 @@ class GroupUsers
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-    
 
     /**
      * @var \integer

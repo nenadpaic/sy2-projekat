@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * Reports
  *
  * @ORM\Table(name="user_reports")
- * @ORM\Entity(repositoryClass="Reports\ModelBundle\Repo\ReportsRepo")
+ * @ORM\Entity(repositoryClass="Report\ModelBundle\Repo\ReportsRepo")
  */
 class Reports
 {
