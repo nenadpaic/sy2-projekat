@@ -2,75 +2,325 @@
 {% block title %}Group | {{ group.getName | striptags }}{% endblock %}
 {% block body %}
 
+    {% include "::_defaultTemplate.html.twig" with{"title": group.getName()} %}
+
     <div id="warnings">
     </div>
-    <h1>{{ group.getName() | striptags}}</h1>
-    <p>{{ group.getDescription() | striptags}}</p>
+
+    <div class="col-lg-12">
+        <div class="row">
+            <!--Group cover picture -->
+            {% if(group.getGroupLogo()) %}
+                <div class="col-lg-12 col-sm-12 col-xs-12 home-section" style="background-image:url(/uploads/groups/{{ group.getId() }}/{{ group.getGroupCover() }})">
+            {% else %}
+                <div class="col-lg-12 col-sm-12 col-xs-12 home-section">
+            {% endif %}
+            <!--End of cover photo-->
+            <div class="col-lg-2 col-sm-3 ">
+            <!--Group Logo photo-->
+                <div class="profile-photo" >
+                    {% if(group.getGroupLogo()) %}
+                        <img src="/uploads/groups/{{ group.getId() }}/{{ group.getGroupLogo() }}">
+                    {% endif %}
+                </div>
+            <!-- End Group Logo-->
+            </div>
+            <div class="col-lg-8 col-sm-6 col-xs-8">
+            </div>
+            {% if(group_users.isAdminOfGroup(group,app.security.getToken().getUser()) == 1) %}
+                <!--If user is admin of group, button for uploading modals-->
+                <div class="col-lg-2 col-sm-3 col-xs-4">
+                    <div class="btn-group">
+                        <button class="btn btn-default btn-md dropdown-toggle hidden-edit" type="button" data-toggle="dropdown">
+                            <span class="glyphicon glyphicon-align-justify" style="text-shadow: 0 -1px 1px #999; color:#D8D8D8;"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li>
+                                <a data-toggle="modal" data-target="#upload-timeline-modal">
+                                    Upload timeline photo
+                                </a>
+                            </li>
+                            <li>
+                                <a data-toggle="modal" data-target="#upload-logo-modal">
+                                    Upload logo photo
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            <!--End of modal buttons-->
+            {% endif %}
+            </div>
+        </div>
+    </div>
+
+    </div>
+    <div class="row col-lg-12">
+        <div class="well col-lg-6">
+            <h3><strong>ABOUT CREATOR</strong></h3>
+            <div class="col-lg-12 well">
+                <h6><strong>Username: </strong>{{ group.getUser().getUsername() }}</h6>
+                <h6><strong>Role: </strong> Role</h6>
+                <h6><strong>About Him: </strong>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quam odit autem quia odio officia accusamus, fugiat quas ad omnis minima aliquid ab facere minus ovo ono plus</h6>
+
+            </div>
+        </div>
+        <div class="well col-lg-6">
+            <h3><strong>ABOUT THIS GROUP</strong></h3>
+            <div class="col-lg-12 well">
+                <h6><strong>Created: </strong>{{ group.getCreatedAt()|date("Y-m-d") }}</h6>
+                <h6><strong>Group Category: </strong> {{ group_category }}</h6>
+                <h6><strong>Members: </strong>{{ group_users|length }} </h6>
+                <h6><strong>Posts: </strong> {{ group_topics|length }}</h6>
+                <h6><strong>Group Description: </strong>{{ group.getDescription() | striptags}}
+                </h6>
+            </div>
+
+        </div>
+    </div>
+
     {% if(group_users.isAdminOfGroup(group,app.security.getToken().getUser()) == 1) %}
-        <!--If user is admin of group, button for uploading modals-->
-        <button class="btn btn-primary" data-toggle="modal" data-target="#upload-timeline-modal">
-            Upload timeline photo
-        </button>
-        <button class="btn btn-primary" data-toggle="modal" data-target="#upload-logo-modal">
-            Upload logo photo
-        </button>
-        <!--End of modal buttons-->
+        <!--Requests, only admin can see them-->
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+
+                <div class="row well">
+                    <div class="col-lg-3">
+                        <h4>List of member requests</h4>
+                    </div>
+                    <div class="col-lg-7">
+                    </div>
+                </div>
+            {% if(group_users.listAllPendingRequestsGroup(group)) %}
+                {% for req in group_users.listAllPendingRequestsGroup(group) %}
+
+                    <div id="group-requests-{{ req.getUser().getId() }}" class="col-lg-1 col-sm-2 col-xs-2 well">
+                        <a href="">
+                            <h6>{{ req.getUser().getUsername() }}</h6>
+                        </a>
+                        <img class="friends-avatars" src="/{{req.getUser().getProfileImage()}}" alt="">
+                        <button class="btn btn-success btn-xs" onclick="accept_to_group(1,{{ req.getUser().getId() }},
+                        {{ group.getId() }}, '{{ path('group-accept-request') }}')">Accept</button>
+                        <button class="btn btn-warning btn-xs" onclick="accept_to_group(0,{{ req.getUser().getId() }},
+                        {{ group.getId() }}, '{{ path('group-accept-request') }}')">Decline</button>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No requests</p>
+            {% endif %}
+            </div>
+    </div>
+        <!--End of requests-->
     {% endif %}
 
-    <!--Group logo photo-->
-    <div id="group-logo-photo">
-        {% if(group.getGroupLogo()) %}
-            <img src="/uploads/groups/{{ group.getId() }}/{{ group.getGroupLogo() }}">
-        {% endif %}
-    </div>
-    <!--End of group logo-->
 
-    <!--Group cover photo-->
-    <div id="group-cover-photo">
-        {% if(group.getGroupCover()) %}
-            <img src="/uploads/groups/{{ group.getId() }}/{{ group.getGroupCover() }}">
-        {% endif %}
-    </div>
-    <!--End of cover photo-->
 
-    <!--Number of topics-->
-    <p>{{ group_topic.countGroupTopics(group.getId()) }}</p>
-    <!--End of number of topics-->
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="row well">
+                <div class="col-lg-3">
+                    <h4>list of mebers</h4>
+                </div>
+                <div class="col-lg-7">
+
+                </div>
+                <div class="col-lg-2">
+                    <a class="hidden-edit" href="#">see all</a>
+                </div>
+            </div>
+            {% if group_users %}
+                {% for g_user in group_users.listAllUsersGroup(group) %}
+                    <div class="col-lg-2 col-sm-2 col-xs-2 well">
+                        <a href="">
+                            <h6>{{ g_user.getUser().getUsername() }}</h6>
+                            <img class="friends-avatars" src="/{{g_user.getUser().getProfileImage()}}" alt="">
+                        </a>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No users in this group</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row">
+
+    <div class="col-lg-5 col-sm-5 col-xs-5">
+        <h3><strong>discussions</strong></h3>
+        <div class="clearfix well row hover-divs" onclick="location.reload();" style="cursor:pointer;">
+
+            <div class="col-lg-4 col-sm-4 col-xs-5">
+                <a href=""><img class="friends-avatars-small" src="images/logo-footer.png" alt=""></a>
+                <a href="#">otvarac diskusije</a>
+            </div>
+            <div class="col-lg-7 col-sm-6 col-xs-5">
+
+                <h4><a href="#">naziv diskusije</a></h4>
+
+            </div>
+            <div class="col-lg-1 col-sm-2 col-xs-2">
+                <button type="button" class="close"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="row col-lg-12 col-sm-12">
+                <span class="txt-messages">Ovde treba napraviti da se ispisuje samo pocetnih nekoliko reci od poruke i staviti tri tacke ...</span>
+            </div>
+        </div>
+
+        <div class="clearfix well row hover-divs" onclick="location.reload();" style="cursor:pointer;">
+
+            <div class="col-lg-4 col-sm-4 col-xs-5">
+                <a href=""><img class="friends-avatars-small" src="images/logo-footer.png" alt=""></a>
+                <a href="#">otvarac diskusije</a>
+            </div>
+            <div class="col-lg-7 col-sm-6 col-xs-5">
+
+                <h4><a href="#">naziv diskusije</a></h4>
+
+            </div>
+            <div class="col-lg-1 col-sm-2 col-xs-2">
+                <button type="button" class="close"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="row col-lg-12 col-sm-12">
+                <span class="txt-messages">Ovde treba napraviti da se ispisuje samo pocetnih nekoliko reci od poruke i staviti tri tacke ...</span>
+            </div>
+        </div>
+
+        <div class="clearfix well row hover-divs" onclick="location.reload();" style="cursor:pointer;">
+
+            <div class="col-lg-4 col-sm-4 col-xs-5">
+                <a href=""><img class="friends-avatars-small" src="images/logo-footer.png" alt=""></a>
+                <a href="#">otvarac diskusije</a>
+            </div>
+            <div class="col-lg-7 col-sm-6 col-xs-5">
+
+                <h4><a href="#">naziv diskusije</a></h4>
+
+            </div>
+            <div class="col-lg-1 col-sm-2 col-xs-2">
+                <button type="button" class="close"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="row col-lg-12 col-sm-12">
+                <span class="txt-messages">Ovde treba napraviti da se ispisuje samo pocetnih nekoliko reci od poruke i staviti tri tacke ...</span>
+            </div>
+        </div>
+
+        <div class="clearfix well row hover-divs" onclick="location.reload();" style="cursor:pointer;">
+
+            <div class="col-lg-4 col-sm-4 col-xs-5">
+                <a href=""><img class="friends-avatars-small" src="images/logo-footer.png" alt=""></a>
+                <a href="#">otvarac diskusije</a>
+            </div>
+            <div class="col-lg-7 col-sm-6 col-xs-5">
+
+                <h4><a href="#">naziv diskusije</a></h4>
+
+            </div>
+            <div class="col-lg-1 col-sm-2 col-xs-2">
+                <button type="button" class="close"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="row col-lg-12 col-sm-12">
+                <span class="txt-messages">Ovde treba napraviti da se ispisuje samo pocetnih nekoliko reci od poruke i staviti tri tacke ...</span>
+            </div>
+        </div>
+
+        <div class="clearfix well row hover-divs" onclick="location.reload();" style="cursor:pointer;">
+
+            <div class="col-lg-4 col-sm-4 col-xs-5">
+                <a href=""><img class="friends-avatars-small" src="images/logo-footer.png" alt=""></a>
+                <a href="#">otvarac diskusije</a>
+            </div>
+            <div class="col-lg-7 col-sm-6 col-xs-5">
+
+                <h4><a href="#">naziv diskusije</a></h4>
+
+            </div>
+            <div class="col-lg-1 col-sm-2 col-xs-2">
+                <button type="button" class="close"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="row col-lg-12 col-sm-12">
+                <span class="txt-messages">Ovde treba napraviti da se ispisuje samo pocetnih nekoliko reci od poruke i staviti tri tacke ...</span>
+            </div>
+        </div>
+
+
+
+
+        <div class="col-lg-12 well">
+            <a href="#"><span>load more...</span></a>
+        </div>
+
+    </div>
+
+
+
+
+    <div class="col-lg-7 col-sm-7 col-xs-7">
+        <h3><strong>NASLOV DISKUSIJE</strong></h3>
+        <div class="clearfix well row">
+
+            <div class="col-lg-4 col-sm-4 col-xs-5">
+                <a href=""><img class="friends-avatars-big" src="images/logo-footer.png" alt=""></a>
+                <a href="#">otvarac diskusije</a>
+            </div>
+            <div class="col-lg-7 col-sm-6 col-xs-5">
+
+                <h3><a href="#">naziv diskusije</a></h3>
+
+            </div>
+            <div class="col-lg-1 col-sm-1 col-xs-1">
+                <button type="button" class="close"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="row col-lg-12 col-sm-12">
+                <span class="txt-messages">kompletan text poruke ovde treba da se prikaziva :D</span>
+            </div>
+        </div>
+
+
+        <div class="row well">
+            <form role="form">
+                <textarea class="form-control" style="width:100%;" rows="3" placeholder="Reply..."></textarea>
+            </form>
+            <div class="col-lg-4 col-sm-8 col-xs-8">
+                <button type="button" class="btn btn-primary btn-xs">
+                    <span class="glyphicon glyphicon-paperclip"></span> Add file
+                </button>
+                <button type="button" class="btn btn-primary btn-xs">
+                    <span class="glyphicon glyphicon-picture"></span> Add image
+                </button>
+            </div>
+            <div class="col-lg-4 col-sm-2 col-xs-2">
+
+            </div>
+            <div class="col-lg-2 col-lg-offset-2 col-sm-2 ">
+                <button type="button" class="btn btn-default btn-xs">
+                    <span> Send</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
 
     <!--Listing all group topics-->
-    {% if group_topic.listAllTopics(group.getId()) %}
-        {% for group_t in group_topic.listAllTopics(group.getId()) %}
-            <a href="{{ path('group-topic', {'slug' : group.getSlug(),'topic_id' : group_t.getId()}) }}"><h5>{{ group_t
+    {% if group_topics.listAllTopics(group.getId()) %}
+        {% for group_t in group_topics.listAllTopics(group.getId()) %}
+           {# <a href="{{ path('group-topic', {'slug' : group.getSlug(),'topic_id' : group_t.getId()}) }}"><h5>{{ group_t
                     .getTitle() |
-                    striptags}}</h5></a>
+                    striptags}}</h5></a>#}
 
         {% endfor %}
     {% else %}
         <p>No topics yet</p>
     {% endif %}
     <!--End of group topics-->
+{#
     {% include "ReportCoreBundle:Default:_report_button.html.twig" with{"reported": reported} %}
+#}
 
-    {% if(group_users.isAdminOfGroup(group,app.security.getToken().getUser()) == 1) %}
-        <!--Requests, only admin can see them-->
-        {% if(group_users.listAllPendingRequestsGroup(group)) %}
-            {% for req in group_users.listAllPendingRequestsGroup(group) %}
-                <div id="group-requests-{{ req.getUser().getId() }}">
-                    <p>{{ req.getUser().getUsername() }}</p>
-                    {% if(req.getUser().getProfileImage()) %}
-                        {{req.getUser().getProfileImage()}}
-                    {% endif %}
-                    <button class="btn btn-success" onclick="accept_to_group(1,{{ req.getUser().getId() }},
-                    {{ group.getId() }}, '{{ path('group-accept-request') }}')">Accept</button>
-                    <button class="btn btn-warning" onclick="accept_to_group(0,{{ req.getUser().getId() }},
-                    {{ group.getId() }}, '{{ path('group-accept-request') }}')">Decline</button>
-                </div>
-            {% endfor %}
-        {% else %}
-            <p>No requests</p>
-        {% endif %}
-        <!--End of requests-->
-    {% endif %}
+
 
     <!--Listing all group members-->
     {% if group_users %}
@@ -87,6 +337,7 @@
             {{ form(new_topic_form) }}
         <!--End of new topic form-->
     {% endif %}
+
 
     {% if(group_users.isAdminOfGroup(group,app.security.getToken().getUser()) == 1) %}
         <!--Modals for admins of groups -->
@@ -137,6 +388,7 @@
 
         <!--End of modals for admins-->
     {% endif %}
+    {% include "::_defaultTemplateFooter.html.twig" %}
 {% endblock %}
 
 {% block javascripts %}

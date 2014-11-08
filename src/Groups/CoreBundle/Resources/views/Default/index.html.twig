@@ -1,7 +1,7 @@
 {% extends "::base.html.twig" %}
 {% block title %}{{ 'groups.title' | trans }}{% endblock %}
 {% block body %}
-    <h1>{{ 'groups.main_title' | trans }}</h1>
+    {% include "::_defaultTemplate.html.twig" with{"title": "Groups"} %}
 
     {% if app.user %}
         <!--If user is logged in, button for creating new group -->
@@ -10,33 +10,47 @@
         </button>
     {% endif %}
     <!--Listing groups-->
-    {% for group in groups %}
-        <a href="{{ path('group', {'slug' : group.getSlug()}) }}"><h2>{{ group.getName() | striptags}}</h2></a>
-        <p>{{ group_users.countGroupUsers(group) }}</p>
-        {% if app.user %}
-            <div id="enter-group-{{ group.getId() }}">
-                {% if(group_users.checkUserStatus(group,app.security.getToken().getUser() ) == 0 )%}
-                    <button class="btn btn-default" onclick="user_group_status({{ group.getId() }},0, '{{ path('user-status-group') }}')">
-                        Join Group
-                    </button>
-                {% elseif(group_users.checkUserStatus(group,app.security.getToken().getUser()) == 1) %}
-                    <button class="btn btn-default" disabled>
-                        Request Sent
-                    </button>
-                {% elseif(group_users.checkUserStatus(group,app.security.getToken().getUser()) == 2) %}
-                    <button class="btn btn-warning" onclick="user_group_status({{ group.getId() }},1,'{{ path('user-status-group') }}')">
-                        Leave group
-                    </button>
-                {% elseif(group_users.checkUserStatus(group,app.security.getToken().getUser()) == 3) %}
-                    <button class="btn btn-success" disabled>
-                        Your group
-                    </button>
-                {% endif %}
+
+
+
+<div class="row">
+{% for group in groups %}
+    <div class="col-lg-4 well">
+        <div class="home-section">
+            <div class="group-title"><a href="{{ path('group', {'slug' : group.getSlug()}) }}"><h4>{{ group.getName() | striptags}}</h4></a></div>
+            <div class="inner-content"></div>
+            <div class="inner-content"></div>
+            <div class="inner-content"><p>{{ group.getDescription() | striptags }}</p></div>
+            <div class="row groups-footer">
+                <div class="col-lg-5">
+                    <h4>{{ group_users.countGroupUsers(group) }} Members</h4>
+                </div>
+                <div class="col-lg-2"></div>
+                <div class="col-lg-5" id="enter-group-{{ group.getId() }}">
+                    {% if(group_users.checkUserStatus(group,app.security.getToken().getUser() ) == 0 )%}
+                        <button class="btn btn-default" onclick="user_group_status({{ group.getId() }},0, '{{ path('user-status-group') }}')">
+                            Join Group
+                        </button>
+                    {% elseif(group_users.checkUserStatus(group,app.security.getToken().getUser()) == 1) %}
+                        <button class="btn btn-default" disabled>
+                            Request Sent
+                        </button>
+                    {% elseif(group_users.checkUserStatus(group,app.security.getToken().getUser()) == 2) %}
+                        <button class="btn btn-warning" onclick="user_group_status({{ group.getId() }},1,'{{ path('user-status-group') }}')">
+                            Leave group
+                        </button>
+                    {% elseif(group_users.checkUserStatus(group,app.security.getToken().getUser()) == 3) %}
+                        <button class="btn btn-success" disabled>
+                            Your group
+                        </button>
+                    {% endif %}                </div>
             </div>
-        {% endif %}
-        <p>{{ group.getDescription() | striptags }}</p>
-    {% endfor %}
-    <!--End of listing groups-->
+        </div>
+    </div>
+{% endfor %}
+<!--End of listing groups-->
+
+</div>
 
     {% if app.user %}
         <!--Starting create group modal for logged in users-->

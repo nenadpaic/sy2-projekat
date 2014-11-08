@@ -118,20 +118,31 @@ class GroupsDefaultController extends Controller
                     'topic_id' => $topic->getId(),
                 )));
         }
-        if($group_users->isAdminOfGroup($group,$user_s))
+/*        if($group_users->isAdminOfGroup($group,$user_s))
             $reported = 0;
         else{
             $report = $this->getDoctrine()->getManager()->getRepository('ReportModelBundle:Reports');
-            $reported = $report->isReported($user_s,1,$group->getId());
+            $reported = $report->isReported(1,$group->getId());
 
-        }
+        }*/
+	    $group_category = $em->getRepository('GroupsModelBundle:CategoryGroup')->findOneBy(array("groupId" => $group->getId()));
 
-        return array(
+	    if(!$group_category)
+	    {
+		    $group_category = "No Category";
+	    }
+	    else
+	    {
+		    $group_category = $group_category->getCategory()->getName();
+	    }
+
+		    return array(
             'group' => $group,
             'group_users' => $group_users,
-            'group_topic' => $group_topics,
+            'group_topics' => $group_topics,
             'new_topic_form' => $form->createView(),
-            'reported' => $reported
+            //'reported' => $reported,
+	        'group_category' => $group_category
         );
     }
 
@@ -141,7 +152,7 @@ class GroupsDefaultController extends Controller
      * requirements={ "_locale" = "en|mk","slug" = "[a-z0-9-]+", "topic_id" = "[0-9]+"})
      * @Template("GroupsCoreBundle:Default:single_topic.html.twig")
      */
-    public function showTopicPageAction($slug,$topic_id){
+/*    public function showTopicPageAction($slug,$topic_id){
         $em = $this->getDoctrine()->getManager();
         $group = $em->getRepository("GroupsModelBundle:Groups")->findOneBy(array("slug" => $slug));
         //Checking for group and topic, do they exist
@@ -178,5 +189,5 @@ class GroupsDefaultController extends Controller
             'group_users' => $group_users,
             'group_comments' => $group_comments
         );
-    }
+    }*/
 }

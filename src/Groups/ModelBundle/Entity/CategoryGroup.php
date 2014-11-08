@@ -36,7 +36,7 @@ class CategoryGroup
     private $categoryId;
 
     /**
-     * @ORM\ManyToOne(targetEntity="DefaultTables\ModelBundle\Entity\Categories", inversedBy="$group_categories",
+     * @ORM\ManyToOne(targetEntity="DefaultTables\ModelBundle\Entity\Categories", inversedBy="group_categories",
      * cascade={"persist", "remove"})
      * @ORM\JoinColumn(name="category_id", referencedColumnName="id")
      */

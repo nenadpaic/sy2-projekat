@@ -86,7 +86,7 @@ class GroupsAdminController extends Controller
      *
      * @Route("/new", name="admin_groups_new")
      * @Method("GET")
-     * @Template()
+     * @Template("GroupsCoreBundle:Groups:new.html.twig")
      */
     public function newAction()
     {

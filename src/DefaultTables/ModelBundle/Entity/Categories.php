@@ -35,6 +35,11 @@ class Categories
      */
     private $name;
 
+	/**
+	 * @ORM\OneToMany(targetEntity="Groups\ModelBundle\Entity\CategoryGroup", mappedBy="category",cascade={"persist", "remove"})
+	 */
+	protected $group_categories;
+	
     /**
      * Get id
      *
@@ -75,4 +80,37 @@ class Categories
         $this->group_categories = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
+
+    /**
+     * Add group_categories
+     *
+     * @param \Groups\ModelBundle\Entity\CategoryGroup $groupCategories
+     * @return Categories
+     */
+    public function addGroupCategory(\Groups\ModelBundle\Entity\CategoryGroup $groupCategories)
+    {
+        $this->group_categories[] = $groupCategories;
+
+        return $this;
+    }
+
+    /**
+     * Remove group_categories
+     *
+     * @param \Groups\ModelBundle\Entity\CategoryGroup $groupCategories
+     */
+    public function removeGroupCategory(\Groups\ModelBundle\Entity\CategoryGroup $groupCategories)
+    {
+        $this->group_categories->removeElement($groupCategories);
+    }
+
+    /**
+     * Get group_categories
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getGroupCategories()
+    {
+        return $this->group_categories;
+    }
 }

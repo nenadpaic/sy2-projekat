@@ -109,8 +109,6 @@ class GroupAjaxController extends Controller{
             return new Response('There is an error,please try again later!', 400);
         if((!$image instanceof UploadedFile) || ($image->getError() != 0))
             return new Response('There is an error,please try again later!', 400);
-        if($image->getSize() > 2097152)
-            return new Response('Your image is to big, please try again!', 400);
         if(!in_array($image->getMimeType(),$valid_extensions))
             return new Response('Your image type is not valid, please try again!', 400);
         $pattern = "/^[a-zA-Z0-9-_. ]+$/";
@@ -121,7 +119,9 @@ class GroupAjaxController extends Controller{
         //Getting new name
         $new_cover_name = mt_rand() . $image->getClientOriginalName();
 
-        //If action is 1, then it is cover,else it is logo image
+	    $image->move($this->getUploadRootDir() . "uploads/groups/" . $group->getId(), $new_cover_name);
+	    $path_name = $this->getUploadRootDir() . "uploads/groups/" . $group->getId() . "/". $new_cover_name;
+	    //If action is 1, then it is cover,else it is logo image
         if($action == 1){
             if($group->getGroupCover()){
                 if(is_file($this->getUploadDirCover($group->getId(),$group->getGroupCover()))){
@@ -129,6 +129,10 @@ class GroupAjaxController extends Controller{
                 }
             }
             $group->setGroupCover($new_cover_name);
+	        $this->get('image.handling')->open($path_name)
+		        ->resize(1200,350)
+		        ->save($path_name);
+
         }
         elseif($action == 2){
             if($group->getGroupLogo()){
@@ -137,12 +141,16 @@ class GroupAjaxController extends Controller{
                 }
             }
             $group->setGroupLogo($new_cover_name);
+	        $this->get('image.handling')->open($path_name)
+		        ->resize(150,150)
+		        ->save($path_name);
+
         }
         $em->persist($group);
         $em->flush();
 
-        $file = $image->move($this->getUploadRootDir() . "uploads/groups/" . $group->getId(), $new_cover_name);
-        $response->setData(array(
+
+	    $response->setData(array(
             "message" => "Image succesfully uploaded",
             "file" => "/uploads/groups/" . $group->getId() ."/".  $new_cover_name
         ));

@@ -35,6 +35,11 @@ class Categories
      */
     private $name;
 
+	/**
+	 * @ORM\OneToMany(targetEntity="Groups\ModelBundle\Entity\CategoryGroup", mappedBy="category",cascade={"persist", "remove"})
+	 */
+	protected $group_categories;
+	
     /**
      * Get id
      *
