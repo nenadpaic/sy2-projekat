@@ -3,7 +3,7 @@
 namespace Users\ModelBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
+use Gedmo\Mapping\Annotation as Gedmo;
 /**
  * TimeLine
  *
@@ -35,19 +35,26 @@ class TimeLine
     private $user;
     /**
      * @var \DateTime
-     *
+     * @Gedmo\Timestampable(on="create")
      * @ORM\Column(name="created_at", type="datetime")
      */
     private $createdAt;
 
     /**
      * @var \DateTime
-     *
+     * @Gedmo\Timestampable(on="update")
      * @ORM\Column(name="updated_at", type="datetime")
      */
     private $updatedAt;
 
-
+    /**
+     * @var \DateTime $contentChanged
+     *
+     * @ORM\Column(name="content_changed", type="datetime", nullable=true)
+     * @Gedmo\Timestampable(on="change", field={"content"})
+     */
+    private $contentChanged;
+    
     /**
      * Get id
      *
@@ -125,5 +132,28 @@ class TimeLine
     public function getUpdatedAt()
     {
         return $this->updatedAt;
+    }
+
+    /**
+     * Set user
+     *
+     * @param \Users\ModelBundle\Entity\User $user
+     * @return TimeLine
+     */
+    public function setUser(\Users\ModelBundle\Entity\User $user = null)
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * Get user
+     *
+     * @return \Users\ModelBundle\Entity\User 
+     */
+    public function getUser()
+    {
+        return $this->user;
     }
 }

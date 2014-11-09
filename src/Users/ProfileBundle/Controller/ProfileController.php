@@ -5,6 +5,7 @@ namespace Users\ProfileBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Users\ModelBundle\Entity\User;
@@ -12,6 +13,7 @@ use Users\ModelBundle\Form\ChangePassType;
 use Users\ModelBundle\Form\ProfileInfoType;
 use Users\ModelBundle\Form\ProfileType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+
 
 class ProfileController extends Controller
 {
@@ -30,7 +32,7 @@ class ProfileController extends Controller
         $userId = ($id == null)? $this->get('security.context')->getToken()->getUser()->getId() : (int) $id;
         $em = $this->getDoctrine()->getManager();
         $user = $em->getRepository('ModelBundle:User')->find($userId);
-        $galeries = $em->getRepository('ModelBundle:Galery')->lastFiveGaleries($userId);
+        
         $documents = $em->getRepository('ModelBundle:Documents')->lastFiveDocuments($userId);
         $nonce = md5(uniqid(rand(time(), true)));
         $session = $request->getSession();
@@ -41,7 +43,7 @@ class ProfileController extends Controller
 
         return array(
             'user' => $user,
-            'galeries' => $galeries,
+
             'documents' => $documents,
             'nonce' => $nonce
         );
@@ -188,7 +190,37 @@ class ProfileController extends Controller
         );
     }
 
+    /**
+     * @Route("/api/get/galeries", name="get_galeries_api", defaults={"_locale"="en"} ,requirements={ "_locale" = "en|mk"})
+     * @Method({"GET"})
+     * @Template()
+     * @param Request $request
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function getLastSixAction(Request $request){
+        $id = $request->query->getInt('user_id');
 
+        $userId = (int) $id;
+
+        $em = $this->getDoctrine()->getManager();
+        $galeries = $em->getRepository('ModelBundle:Galery')->lastFiveGaleries($userId);
+        $response = new JsonResponse();
+        if(!$galeries){
+
+            $response->setData(array('status' => 'No galeries'));
+            return $response;
+        }
+        $json = array();
+        foreach($galeries as $g){
+            $picture = $em->getRepository('ModelBundle:Pictures')->findOneBy(array('galery' => $g->getId()));
+            
+            $data = array('id' => $g->getId(), 'name' => $g->getName(), 'lastpic' => (!$picture)? "" : $this->container->get('templating.helper.assets')->getUrl($picture->profileImageDir()));
+            array_push($json, $data);
+        }
+        $response->setData($json);
+        return $response;
+        
+    }
 
 
 }

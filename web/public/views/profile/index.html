@@ -1,29 +1,37 @@
 <div ng-controller="TimeLineGetController">
-    <div ng-repeat="posts in timelineData">
+<h4>Create new post</h4>
+<textarea ng-model="contentNew"></textarea>
+<button ng-click="createPost()">Create new post</button>
+    <div ng-repeat="niz in timelineData">
+    <div ng-repeat="posts in niz.page">
+
 <newline>
     <col>
 
     <div ng-if="posts.delete">
-        delete
+        <button ng-click="deletePost(posts.id)">Delete post</button>
     </div>
-    <div ng-if="posts.report">
-        report
+    <div ng-if="posts.edit">
+                <button ng-click="editorEnabled(posts.id)">Edit</button>
     </div>
+
         <name>[[posts.user]]</name>
         <date>Created at: [[posts.createdAt.date]], Last update: [[posts.updatedAt.date]]</date>
-    <content>
-        <div ng-hide="editorEnabled">
-            [[posts.content]]
-            <div ng-if="posts.edit">
-                <button ng-click="editorEnabled=!editorEnabled">Edit</button>
-            </div>
-        </div>
-        <div ng-show="editorEnabled">
-            <input type="text" ng-model="posts.content"/>
-            <button ng-click="editorEnabled=!editorEnabled">Update</button>
-        </div>
-    </content>
+        <content>[[posts.content]]</content>
     </col>
-</newline>
+    </newline>
     </div>
+    </div>
+
+<div ng-if="time.status == false">
+    <h4>No more posts</h4>
+</div>
+<div ng-if="time.status != false">
+    <button ng-click="load()">Load more posts</button>
+</div>
+
+
+
+
+
 </div>

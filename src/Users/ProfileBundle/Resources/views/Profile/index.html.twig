@@ -24,9 +24,7 @@
     <a href="{{ path('create_new_galery') }}">{{ 'galeries.create' | trans }}</a>
 {% endif %}
     <a href="{{ path('galeries', {'user_id': user.getId()}) }}">{{ 'galeries.all' | trans }}</a>
-    {% for galery in galeries %}
-        <a href="{{ path('show_galery', {'id' : galery.getId()})  }}"><h3>{{ galery.getName() }}</h3></a>
-    {% endfor %}
+
     <h2>{{ 'profile.documents' | trans }}</h2>
     {% if app.user and app.security.getToken().getUser().getId() == user.getId()%}
         <a href="{{ path('upload_document') }}">{{ 'profile.create_doc' | trans }}</a>
@@ -47,6 +45,8 @@
     <script type="text/javascript">
         var path_time_line = "{{ path('timelineAll') }}";
         var path_time_single = "{{ path('edit_timeline') }}";
+        var path_time_delete = "{{ path('delete_timeline') }}";
+        var path_time_create = "{{ path('create_timeline') }}";
         var nonce = "{{ nonce }}";
         var user_id = {{ user.getId() }};
     </script>

@@ -17,7 +17,7 @@ class TimeLineRepository extends EntityRepository
         $qb = $this->getQuseryBuilder()
             ->where('t.user = :user_id')
             ->setParameter('user_id', $userId)
-            ->orderBy('t.createdAt', 'DESC')
+            ->orderBy('t.updatedAt', 'DESC')
             ->getQuery();
         $timeline = $qb->getResult();
         return $timeline;

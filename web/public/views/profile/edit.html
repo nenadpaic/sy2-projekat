@@ -1,3 +1,9 @@
-<div ng-controller="TimeLineControllerEdit">
+<div ng-controller="editController">
+
+	<textarea ng-model="post.content"></textarea>
+	<input type="hidden" ng-model="post.id" />
+	<button ng-click="updatePost()">Update post</button>
+	<button ng-click="cancelUpdate()" >Cancel</button>
+
 
 </div>

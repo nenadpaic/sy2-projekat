@@ -78,6 +78,7 @@ class GaleryController extends Controller
      * @Template()
      * @param Request $request
      * @param $id
+     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      * Delete galery
      */
